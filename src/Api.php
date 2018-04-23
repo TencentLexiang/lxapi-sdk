@@ -31,9 +31,12 @@ class Api
         return $response['access_token'];
     }
 
-    public function get($uri, $data)
+    public function get($uri, $data = [])
     {
-        return $this->request('GET', $uri . '?' . http_build_query($data));
+        if ($data) {
+            $uri .= ( '?' . http_build_query($data));
+        }
+        return $this->request('GET', $uri);
     }
 
     public function request($method, $uri)
