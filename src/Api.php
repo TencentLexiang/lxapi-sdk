@@ -5,11 +5,12 @@ use GuzzleHttp\Psr7\Request;
 use Http\Adapter\Guzzle6\Client;
 use WoohooLabs\Yang\JsonApi\Client\JsonApiClient;
 
-class Api{
+class Api
+{
 
-    private $main_url = 'https://lxapi.lexiangla.net/cgi-bin';
+    protected $main_url = 'https://lxapi.lexiangla.com/cgi-bin';
 
-    private $verson = 'v1';
+    protected $verson = 'v1';
 
     public function __construct($app_key, $app_secret)
     {
@@ -27,14 +28,7 @@ class Api{
         $client = new \GuzzleHttp\Client();
         $response = $client->post($this->main_url . '/token', $options);
         $response = json_decode($response->getBody()->getContents(), true);
-        // TODO token有效期$expire_in秒，客户端须写入缓存多次使用
-        // $expire_in = $access_token['expire_in'];
         return $response['access_token'];
-    }
-
-    public function getDownloadLogs($request = [])
-    {
-        return $this->get('download-logs', $request);
     }
 
     public function get($uri, $data)
