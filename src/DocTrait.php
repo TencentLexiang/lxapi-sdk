@@ -46,7 +46,7 @@ Trait DocTrait
         }
         if (!empty($options['attachments'])) {
             foreach ($options['attachments'] as $attachment_id) {
-                $document['data']['relationships']['directory']['data'][] = [
+                $document['data']['relationships']['attachments']['data'][] = [
                     'type' => 'attachment',
                     'id' => $attachment_id
                 ];
