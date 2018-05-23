@@ -70,6 +70,33 @@ class Api
         return $this->response->document()->toArray();
     }
 
+    public function postAsset($staff_id, $type, $file)
+    {
+        $data = [
+            [
+                'name'     => 'file',
+                'contents' => $file,
+            ],
+            [
+                'name' => 'staff_id',
+                'contents' => $staff_id
+            ],
+            [
+                'name' => 'type',
+                'contents' => $type
+            ]
+        ];
+        $client = new \GuzzleHttp\Client();
+        $response = $client->request('POST', $this->main_url.'/'.$this->verson.'/assets', [
+            'multipart' => $data,
+            'headers'  => [
+                'Authorization' => 'Bearer ' . $this->getAccessToken()
+            ],
+        ]);
+        $response = json_decode($response->getBody()->getContents(), true);
+        return $response;
+    }
+
     /**
      * @return JsonApiResponse
      */
