@@ -10,7 +10,6 @@ use WoohooLabs\Yang\JsonApi\Response\JsonApiResponse;
 class Api
 {
     use DocTrait;
-    use DownloadLogTrait;
 
     protected $main_url = 'https://lxapi.lexiangla.com/cgi-bin';
 
