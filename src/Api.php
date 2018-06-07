@@ -1,7 +1,6 @@
 <?php
 namespace Lexiangla\Openapi;
 
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use Http\Adapter\Guzzle6\Client;
 use WoohooLabs\Yang\JsonApi\Client\JsonApiClient;
@@ -10,6 +9,8 @@ use WoohooLabs\Yang\JsonApi\Response\JsonApiResponse;
 class Api
 {
     use DocTrait;
+    use QuestionTrait;
+    use ThreadTrait;
 
     protected $main_url = 'https://lxapi.lexiangla.com/cgi-bin';
 
@@ -20,6 +21,8 @@ class Api
     protected $key;
 
     protected $app_secret;
+
+    protected $staff_id;
 
     public function __construct($app_key, $app_secret)
     {
@@ -48,9 +51,15 @@ class Api
         return $this->request('GET', $uri);
     }
 
+
     public function post($uri, $data = [])
     {
         return $this->request('POST', $uri, $data);
+    }
+
+    public function patch($uri, $data = [])
+    {
+        return $this->request('PATCH', $uri, $data);
     }
 
     public function request($method, $uri, $data = [])
@@ -66,7 +75,12 @@ class Api
         if ($this->response->getStatusCode() >= 400) {
             return json_decode($this->response->getBody()->getContents(), true);
         }
-        return $this->response->document()->toArray();
+        if ($this->response->getStatusCode() == 204) {
+            return [];
+        }
+        if (in_array($this->response->getStatusCode(), [200, 201])) {
+            return $this->response->document()->toArray();
+        }
     }
 
     public function postAsset($staff_id, $type, $file)
@@ -77,10 +91,6 @@ class Api
                 'contents' => $file,
             ],
             [
-                'name' => 'staff_id',
-                'contents' => $staff_id
-            ],
-            [
                 'name' => 'type',
                 'contents' => $type
             ]
@@ -89,7 +99,8 @@ class Api
         $response = $client->request('POST', $this->main_url.'/'.$this->verson.'/assets', [
             'multipart' => $data,
             'headers'  => [
-                'Authorization' => 'Bearer ' . $this->getAccessToken()
+                'Authorization' => 'Bearer ' . $this->getAccessToken(),
+                'StaffID' => $staff_id,
             ],
         ]);
         $response = json_decode($response->getBody()->getContents(), true);
@@ -102,5 +113,15 @@ class Api
     public function response()
     {
         return $this->response;
+    }
+
+    /**
+     * @param $staff_id
+     * @return $this
+     */
+    public function forStaff($staff_id)
+    {
+        $this->staff_id = $staff_id;
+        return $this;
     }
 }

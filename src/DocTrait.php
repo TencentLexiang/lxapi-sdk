@@ -12,14 +12,6 @@ Trait DocTrait
                     'title' => $attributes['title'],
                     'content' => $attributes['content'],
                     'is_markdown' => $attributes['is_markdown'],
-                ],
-                'relationships' => [
-                    'owner' => [
-                        'data' => [
-                            'type' => 'staff',
-                            'id' => $staff_id
-                        ]
-                    ],
                 ]
             ]
         ];
@@ -52,7 +44,7 @@ Trait DocTrait
                 ];
             }
         }
-        return $this->post('docs', $document);
+        return $this->forStaff($staff_id)->post('docs', $document);
     }
 
     public function getDoc($id, $request = [])
