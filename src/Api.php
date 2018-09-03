@@ -62,9 +62,15 @@ class Api
         return $this->request('PATCH', $uri, $data);
     }
 
+    public function delete($uri, $data = [])
+    {
+        return $this->request('DELETE', $uri, $data);
+    }
+
     public function request($method, $uri, $data = [])
     {
         $headers["Authorization"] = 'Bearer ' . $this->getAccessToken();
+        $headers["StaffID"] = $this->staff_id;
         if (!empty($data)) {
             $headers["Content-Type"] = 'application/vnd.api+json';
         }
@@ -72,6 +78,7 @@ class Api
         $client = new JsonApiClient(new Client());
 
         $this->response = $client->sendRequest($request);
+
         if ($this->response->getStatusCode() >= 400) {
             return json_decode($this->response->getBody()->getContents(), true);
         }
