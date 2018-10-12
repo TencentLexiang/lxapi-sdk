@@ -11,6 +11,7 @@ class Api
     use DocTrait;
     use QuestionTrait;
     use ThreadTrait;
+    use CategoryTrait;
 
     protected $main_url = 'https://lxapi.lexiangla.com/cgi-bin';
 
@@ -103,15 +104,45 @@ class Api
             ]
         ];
         $client = new \GuzzleHttp\Client();
-        $response = $client->request('POST', $this->main_url.'/'.$this->verson.'/assets', [
+        $this->response = $client->request('POST', $this->main_url.'/'.$this->verson.'/assets', [
             'multipart' => $data,
             'headers'  => [
                 'Authorization' => 'Bearer ' . $this->getAccessToken(),
                 'StaffID' => $staff_id,
             ],
         ]);
-        $response = json_decode($response->getBody()->getContents(), true);
-        return $response;
+        return json_decode($this->response->getBody()->getContents(), true);
+    }
+
+    public function postAttachment($staff_id, $target_type, $target_id, $file, $options = [])
+    {
+        $data = [
+            [
+                'name'     => 'file',
+                'contents' => $file,
+            ],
+            [
+                'name'     => 'target_type',
+                'contents' => $target_type,
+            ],
+            [
+                'name'     => 'target_id',
+                'contents' => $target_id,
+            ],
+            [
+                'name' => 'downloadable',
+                'contents' => !empty($options['downloadable']) ? 1 : 0,
+            ]
+        ];
+        $client = new \GuzzleHttp\Client();
+        $this->response = $client->request('POST', $this->main_url.'/'.$this->verson.'/attachments', [
+            'multipart' => $data,
+            'headers'  => [
+                'Authorization' => 'Bearer ' . $this->getAccessToken(),
+                'StaffID' => $staff_id,
+            ],
+        ]);
+        return json_decode($this->response->getBody()->getContents(), true);
     }
 
     /**

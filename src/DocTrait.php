@@ -18,6 +18,11 @@ Trait DocTrait
         if (isset($options['privilege_type'])) {
             $document['data']['attributes']['privilege_type'] = $options['privilege_type'];
         }
+        if (isset($options['privilege'])) {
+            foreach ($options['privilege'] as $privilege) {
+                $document['data']['relationships']['privilege']['data'][] = $privilege;
+            }
+        }
         if (isset($options['source'])) {
             $document['data']['attributes']['source'] = $options['source'];
         }
@@ -50,5 +55,31 @@ Trait DocTrait
     public function getDoc($id, $request = [])
     {
         return $this->get('docs/' . $id, $request);
+    }
+
+    public function postDirectory($staff_id, $attributes, $options = [])
+    {
+        $document = [
+            'data' => [
+                'type' => 'directory',
+                'attributes' => [
+                    'name' => $attributes['name'],
+                ],
+                'relationships' => [
+                    'team' => [
+                        'data' => [
+                            'type' => 'team',
+                            'id' => $attributes['team_id']
+                        ]
+                    ]
+                ],
+            ]
+        ];
+
+        if (isset($options['parent_id'])) {
+            $document['data']['relationships']['parent']['data']['type'] = 'directory';
+            $document['data']['relationships']['parent']['data']['id'] = $options['parent_id'];
+        }
+        return $this->forStaff($staff_id)->post('directories', $document);
     }
 }
