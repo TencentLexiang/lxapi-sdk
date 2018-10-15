@@ -145,6 +145,37 @@ class Api
         return json_decode($this->response->getBody()->getContents(), true);
     }
 
+    public function getCOSAttachmentParams($filenames)
+    {
+        $data = compact('filenames');
+        $client = new \GuzzleHttp\Client();
+        $this->response = $client->request('POST', $this->main_url . '/' . $this->verson . '/attachments/cos-attachment-params', [
+            'json' => $data,
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->getAccessToken(),
+                'StaffID' => $this->staff_id,
+            ],
+        ]);
+        return json_decode($this->response->getBody()->getContents(), true);
+    }
+
+
+    public function postCOSAttachment($state, $target_type, $target_id, $options = [])
+    {
+        $downloadable = !empty($options['downloadable']);
+        $data = compact('state', 'target_type','target_id', 'downloadable');
+        $client = new \GuzzleHttp\Client();
+        $this->response = $client->request('POST', $this->main_url . '/' . $this->verson . '/attachments/cos-attachment', [
+            'json' => $data,
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->getAccessToken(),
+                'StaffID' => $this->staff_id,
+            ],
+        ]);
+        $statusCode = $this->response->getStatusCode();
+        return $statusCode === 204;
+    }
+
     /**
      * @return JsonApiResponse
      */
