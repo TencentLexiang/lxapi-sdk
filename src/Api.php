@@ -14,6 +14,7 @@ class Api
     use CategoryTrait;
 
     protected $main_url = 'https://lxapi.lexiangla.com/cgi-bin';
+//    protected $main_url = 'https://lxapi.lexiangla.net/cgi-bin';
 
     protected $verson = 'v1';
 
@@ -145,7 +146,7 @@ class Api
         return json_decode($this->response->getBody()->getContents(), true);
     }
 
-    public function getCOSAttachmentParams($filenames)
+    private function getCOSAttachmentParams($filenames)
     {
         $data = compact('filenames');
         $client = new \GuzzleHttp\Client();
@@ -160,7 +161,7 @@ class Api
     }
 
 
-    public function postCOSAttachment($state, $target_type, $target_id, $options = [])
+    private function postCOSAttachment($state, $target_type, $target_id, $options = [])
     {
         $downloadable = !empty($options['downloadable']);
         $data = compact('state', 'target_type','target_id', 'downloadable');
@@ -174,6 +175,36 @@ class Api
         ]);
         $statusCode = $this->response->getStatusCode();
         return $statusCode === 204;
+    }
+
+    public function postCOSAttachments($filepaths, $target_type, $target_id, $options = [])
+    {
+        $results = [];
+
+        //region 1. 从乐享批量获取直传文件的目标路径及签名参数
+        $filenames = array_map(function ($filepath) {
+            return pathinfo($filepath, PATHINFO_BASENAME);
+        }, $filepaths);
+        $cos_params = $this->getCOSAttachmentParams($filenames);
+        //endregion 1
+
+        for ($i = 0; $i < count($filepaths); $i++) {
+            //region 2. 凭获得的签名及参数，直接调用腾讯云COS接口上传文件
+            $object = &$cos_params['objects'][$i];
+            $filename = pathinfo($filepaths[$i], PATHINFO_BASENAME);
+            $object['filepath'] = $filepaths[$i];
+            $etag = qcloudPutObject($object, $cos_params['options']);
+            //endregion 2
+
+            if (!empty($etag)) {
+                //region 3. 在乐享对上传完成的文件进行后续处理
+                $success = $this->postCOSAttachment($object['state'], $target_type, $target_id, ['downloadable' => 1]);
+                //endregion 3
+            }
+            $results[$filename] = compact('etag', 'success');
+        }
+
+        return $results;
     }
 
     /**
