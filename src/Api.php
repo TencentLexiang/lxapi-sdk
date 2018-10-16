@@ -159,6 +159,32 @@ class Api
         return json_decode($this->response->getBody()->getContents(), true);
     }
 
+    /**
+     * 直接调用腾讯云COS的putObject接口上传文件。
+     * https://cloud.tencent.com/document/product/436/7749
+     * @param $object
+     * @param $options
+     * @return string 上传文件内容的 MD5 值
+     */
+    private function qcloudPutObject($object, $options)
+    {
+        $key = $object['key'];
+        $url = 'http://' . $options['Bucket'] . '.cos.' . $options['Region'] . '.myqcloud.com/' . $key;
+        $client = new \GuzzleHttp\Client();
+        $response = $client->put($url, [
+            'headers' => [
+                    'Authorization' => $object['auth']['Authorization'],
+                    'x-cos-security-token' => $object['auth']['XCosSecurityToken'],
+                ] + $object['headers'],
+            'body' => fopen($object['filepath'], 'r'),
+        ]);
+
+        $header = $response->getHeader('ETag');
+        $etag = isset($header[0]) ? $header[0] : '';
+        $etag = trim($etag, '"');
+        return $etag;
+    }
+
 
     private function postCOSAttachment($state, $target_type, $target_id, $options = [])
     {
@@ -192,7 +218,7 @@ class Api
             $object = &$cos_params['objects'][$i];
             $filename = pathinfo($filepaths[$i], PATHINFO_BASENAME);
             $object['filepath'] = $filepaths[$i];
-            $etag = qcloudPutObject($object, $cos_params['options']);
+            $etag = $this->qcloudPutObject($object, $cos_params['options']);
             //endregion 2
 
             if (!empty($etag)) {
