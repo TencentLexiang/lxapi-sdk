@@ -14,7 +14,6 @@ class Api
     use CategoryTrait;
 
     protected $main_url = 'https://lxapi.lexiangla.com/cgi-bin';
-//    protected $main_url = 'https://lxapi.lexiangla.net/cgi-bin';
 
     protected $verson = 'v1';
 
