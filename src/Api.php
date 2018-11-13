@@ -12,7 +12,7 @@ class Api
     use QuestionTrait;
     use ThreadTrait;
     use CategoryTrait;
-
+    use CommentTrait;
     protected $main_url = 'https://lxapi.lexiangla.com/cgi-bin';
 
     protected $verson = 'v1';
