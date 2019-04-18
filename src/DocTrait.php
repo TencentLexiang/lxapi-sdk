@@ -52,6 +52,65 @@ Trait DocTrait
         return $this->forStaff($staff_id)->post('docs', $document);
     }
 
+    public function postFile($staff_id, $file_path,  $attributes, $options = [])
+    {
+        $this->staff_id = $staff_id;
+        if (!file_exists($file_path)) {
+            throw new \Exception("上传文件路径不存在");
+        }
+        $team_id = isset($attributes['team_id']) ? $attributes['team_id'] : "";
+        $file_name = pathinfo($file_path, PATHINFO_BASENAME);
+        $cos_params = $this->getCOSFileParams($file_name, $team_id);
+
+
+
+        if (empty($cos_params['object'])) {
+            throw new \Exception("获取上传文件参数错误");
+        }
+
+        $object = $cos_params['object'];
+        $object['filepath'] = $file_path;
+
+        $etag = $this->qcloudPutObject($object, $cos_params['options']);
+
+
+        if (empty($etag)) {
+            throw new \Exception("文件上传失败");
+        }
+
+        $file = [
+            'data' => [
+                'type' => 'file',
+                'attributes' => [
+                    'downloadable'  => $attributes['downloadable'],
+                    'picture_url'   => isset($attributes['picture_url']) ? $attributes['picture_url'] : "",
+                ]
+            ],
+            'state' => $object['state']
+        ];
+
+        $file['data']['relationships']['category']['data']['type'] = 'category';
+        $file['data']['relationships']['category']['data']['id'] = $options['category_id'];
+
+        return $this->forStaff($staff_id)->post('files', $file);
+    }
+
+    private function getCOSFileParams($file_name, $team_id)
+    {
+        $data = compact('file_name', 'team_id');
+        $client = new \GuzzleHttp\Client();
+
+        $this->response = $client->request('POST', $this->main_url . '/' . $this->verson . '/files/cos-params', [
+            'json' => $data,
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->getAccessToken(),
+                'StaffID' => $this->staff_id,
+            ],
+        ]);
+
+        return json_decode($this->response->getBody()->getContents(), true);
+    }
+
     public function patchDoc($staff_id, $doc_id, $options)
     {
         $document = [
