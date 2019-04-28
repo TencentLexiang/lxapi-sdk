@@ -147,20 +147,6 @@ class Api
         return json_decode($this->response->getBody()->getContents(), true);
     }
 
-    private function getCOSAttachmentParams($filenames)
-    {
-        $data = compact('filenames');
-        $client = new \GuzzleHttp\Client();
-        $this->response = $client->request('POST', $this->main_url . '/' . $this->verson . '/attachments/cos-attachment-params', [
-            'json' => $data,
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->getAccessToken(),
-                'StaffID' => $this->staff_id,
-            ],
-        ]);
-        return json_decode($this->response->getBody()->getContents(), true);
-    }
-
     /**
      * 直接调用腾讯云COS的putObject接口上传文件。
      * https://cloud.tencent.com/document/product/436/7749
@@ -188,49 +174,71 @@ class Api
     }
 
 
-    private function postCOSAttachment($state, $target_type, $target_id, $options = [])
+    /**
+     * 获取cos　data
+     * @param $file_path
+     * @param $upload_type
+     * @return array|bool [etag, state]
+     */
+    private function postCosFile($file_path, $upload_type)
     {
-        $downloadable = !empty($options['downloadable']);
-        $data = compact('state', 'target_type','target_id', 'downloadable');
-        $client = new \GuzzleHttp\Client();
-        $this->response = $client->request('POST', $this->main_url . '/' . $this->verson . '/attachments/cos-attachment', [
-            'json' => $data,
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->getAccessToken(),
-                'StaffID' => $this->staff_id,
-            ],
-        ]);
-        $statusCode = $this->response->getStatusCode();
-        return $statusCode === 204;
-    }
+        $filename = pathinfo($file_path, PATHINFO_BASENAME);
 
-    public function postCOSAttachments($filepaths, $target_type, $target_id, $options = [])
-    {
-        $results = [];
+        $cos_param = $this->getDocCOSParam($filename, $upload_type);
 
-        //region 1. 从乐享批量获取直传文件的目标路径及签名参数
-        $filenames = array_map(function ($filepath) {
-            return pathinfo($filepath, PATHINFO_BASENAME);
-        }, $filepaths);
-        $cos_params = $this->getCOSAttachmentParams($filenames);
-        //endregion 1
-
-        for ($i = 0; $i < count($filepaths); $i++) {
-            //region 2. 凭获得的签名及参数，直接调用腾讯云COS接口上传文件
-            $object = &$cos_params['objects'][$i];
-            $filename = pathinfo($filepaths[$i], PATHINFO_BASENAME);
-            $object['filepath'] = $filepaths[$i];
-            $etag = $this->qcloudPutObject($object, $cos_params['options']);
-            //endregion 2
-
-            if (!empty($etag)) {
-                //region 3. 在乐享对上传完成的文件进行后续处理
-                $success = $this->postCOSAttachment($object['state'], $target_type, $target_id, ['downloadable' => 1]);
-                //endregion 3
-            }
-            $results[$filename] = compact('etag', 'success');
+        if (empty($cos_param['options']) || empty($cos_param['object'])) {
+            return false;
         }
 
+        $object = $cos_param['object'];
+        $object['filepath'] = $file_path;
+
+        return [$this->qcloudPutObject($object, $cos_param['options']), $object['state']];
+    }
+
+
+    public function postCOSAttachment($staff_id, $file_path, $target_type, $target_id, $options = [])
+    {
+        $this->staff_id = $staff_id;
+
+        if ($cos_data = $this->postCosFile($file_path, 'attachment')) {
+
+            list($etag, $state) = $cos_data;
+
+            if (empty($etag)) {
+                return false;
+            }
+
+            $data = [
+                'state' => $state,
+                'target_type' => $target_type,
+                'target_id'   => $target_id,
+                'downloadable' => !empty($options['downloadable'])
+            ];
+
+            $client = new \GuzzleHttp\Client();
+            $this->response = $client->request('POST', $this->main_url . '/' . $this->verson . '/attachments/cos-attachment', [
+                'json' => $data,
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->getAccessToken(),
+                    'StaffID' => $this->staff_id,
+                ],
+            ]);
+
+            $statusCode = $this->response->getStatusCode();
+
+            return $statusCode === 200 ? $this->response->getBody()->getContents() : false;
+        }
+
+        return false;
+    }
+
+    public function postCOSAttachments($file_paths, $target_type, $target_id, $options = [])
+    {
+        $results = [];
+        foreach ($file_paths as $file_path) {
+            $results[$file_path] = $this->postCOSAttachment($file_path, $target_type, $target_id, $options);
+        }
         return $results;
     }
 

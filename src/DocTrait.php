@@ -58,49 +58,41 @@ Trait DocTrait
         if (!file_exists($file_path)) {
             throw new \Exception("上传文件路径不存在");
         }
-        $team_id = isset($attributes['team_id']) ? $attributes['team_id'] : "";
-        $file_name = pathinfo($file_path, PATHINFO_BASENAME);
-        $cos_params = $this->getCOSFileParams($file_name, $team_id);
 
-
-
-        if (empty($cos_params['object'])) {
-            throw new \Exception("获取上传文件参数错误");
+        $cos_data = $this->postCosFile($file_path, 'file');
+        if (empty($cos_data)) {
+            throw new \Exception("上传到腾讯云cos存储或者获取签名失败");
         }
-
-        $object = $cos_params['object'];
-        $object['filepath'] = $file_path;
-
-        $etag = $this->qcloudPutObject($object, $cos_params['options']);
-
-
+        list($etag, $state) = $cos_data;
         if (empty($etag)) {
-            throw new \Exception("文件上传失败");
+            throw new \Exception("上传到腾讯云cos存储失败");
         }
-
         $file = [
             'data' => [
                 'type' => 'file',
                 'attributes' => [
+                    'team_id'      => isset($attributes['team_id']) ? $attributes['team_id'] : "",
                     'downloadable'  => $attributes['downloadable'],
                     'picture_url'   => isset($attributes['picture_url']) ? $attributes['picture_url'] : "",
                 ]
             ],
-            'state' => $object['state']
+            'state' => $state
         ];
 
         $file['data']['relationships']['category']['data']['type'] = 'category';
         $file['data']['relationships']['category']['data']['id'] = $options['category_id'];
-
         return $this->forStaff($staff_id)->post('files', $file);
     }
 
-    private function getCOSFileParams($file_name, $team_id)
+    private function getDocCOSParam($file_name, $type)
     {
-        $data = compact('file_name', 'team_id');
-        $client = new \GuzzleHttp\Client();
+        $data = [
+            'filename' => $file_name,
+            'type'      => $type
+        ];
 
-        $this->response = $client->request('POST', $this->main_url . '/' . $this->verson . '/files/cos-params', [
+        $client = new \GuzzleHttp\Client();
+        $this->response = $client->request('POST', $this->main_url . '/' . $this->verson . '/docs/cos-param', [
             'json' => $data,
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->getAccessToken(),
