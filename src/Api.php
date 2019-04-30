@@ -158,18 +158,39 @@ class Api
     {
         $key = $object['key'];
         $url = 'http://' . $options['Bucket'] . '.cos.' . $options['Region'] . '.myqcloud.com/' . $key;
-        $client = new \GuzzleHttp\Client();
-        $response = $client->put($url, [
-            'headers' => [
-                    'Authorization' => $object['auth']['Authorization'],
-                    'x-cos-security-token' => $object['auth']['XCosSecurityToken'],
-                ] + $object['headers'],
-            'body' => fopen($object['filepath'], 'r'),
-        ]);
 
-        $header = $response->getHeader('ETag');
-        $etag = isset($header[0]) ? $header[0] : '';
-        $etag = trim($etag, '"');
+        $headers = [
+                'Authorization' => $object['auth']['Authorization'],
+                'x-cos-security-token' => $object['auth']['XCosSecurityToken']
+            ] + $object['headers'];
+
+        $raw_request_headers = [];
+        foreach ($headers as  $key => $header) {
+            $raw_request_headers[] = $key . ":" . $header;
+        }
+
+        $ch = curl_init(); //初始化CURL句柄
+        curl_setopt($ch, CURLOPT_URL, $url); //设置请求的URL
+        curl_setopt ($ch, CURLOPT_HTTPHEADER, $raw_request_headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1); //设为TRUE把curl_exec()结果转化为字串，而不是直接输出
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST,"PUT"); //设置请求方式
+        curl_setopt($ch, CURLOPT_POSTFIELDS, fopen($object['filepath'], 'r'));//设置提交的字符串
+        $output = curl_exec($ch);
+        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        // 根据头大小去获取头信息内容
+        $raw_response_headers = explode("\r\n", trim(substr($output, 0, $header_size)));
+
+        $response_header = [];
+        foreach ($raw_response_headers as $key => $raw_response_header) {
+            if ($key == 0) {
+                continue;
+            }
+            list($item, $value) = explode(":", $raw_response_header);
+            $response_header[$item] = trim($value);
+        }
+
+        $etag =  isset($response_header['ETag']) ? trim($response_header['ETag'], '"') : "";
         return $etag;
     }
 
