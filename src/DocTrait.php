@@ -52,6 +52,57 @@ Trait DocTrait
         return $this->forStaff($staff_id)->post('docs', $document);
     }
 
+    public function postFile($staff_id, $file_path,  $attributes, $options = [])
+    {
+        $this->staff_id = $staff_id;
+        if (!file_exists($file_path)) {
+            throw new \Exception("上传文件路径不存在");
+        }
+
+        $cos_data = $this->postCosFile($file_path, 'file');
+        if (empty($cos_data)) {
+            throw new \Exception("上传到腾讯云cos存储或者获取签名失败");
+        }
+        list($etag, $state) = $cos_data;
+        if (empty($etag)) {
+            throw new \Exception("上传到腾讯云cos存储失败");
+        }
+        $file = [
+            'data' => [
+                'type' => 'file',
+                'attributes' => [
+                    'team_id'      => isset($attributes['team_id']) ? $attributes['team_id'] : "",
+                    'downloadable'  => $attributes['downloadable'],
+                    'picture_url'   => isset($attributes['picture_url']) ? $attributes['picture_url'] : "",
+                ]
+            ],
+            'state' => $state
+        ];
+
+        $file['data']['relationships']['category']['data']['type'] = 'category';
+        $file['data']['relationships']['category']['data']['id'] = $options['category_id'];
+        return $this->forStaff($staff_id)->post('files', $file);
+    }
+
+    private function getDocCOSParam($file_name, $type)
+    {
+        $data = [
+            'filename' => $file_name,
+            'type'      => $type
+        ];
+
+        $client = new \GuzzleHttp\Client();
+        $this->response = $client->request('POST', $this->main_url . '/' . $this->verson . '/docs/cos-param', [
+            'json' => $data,
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->getAccessToken(),
+                'StaffID' => $this->staff_id,
+            ],
+        ]);
+
+        return json_decode($this->response->getBody()->getContents(), true);
+    }
+
     public function patchDoc($staff_id, $doc_id, $options)
     {
         $document = [
