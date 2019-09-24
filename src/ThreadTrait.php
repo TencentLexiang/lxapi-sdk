@@ -34,6 +34,11 @@ Trait ThreadTrait
         return $this->get('threads/' . $id, $request);
     }
 
+    public function getThreadPost($id, $request = [])
+    {
+        return $this->get('threads/' . $id. '/posts', $request);
+    }
+
     public function deleteThread($staff_id, $thread_id)
     {
         return $this->forStaff($staff_id)->delete('threads/' . $thread_id);
