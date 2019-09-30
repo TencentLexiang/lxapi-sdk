@@ -14,6 +14,7 @@ class Api
     use CategoryTrait;
     use CommentTrait;
     use LikeTrait;
+    use LiveTrait;
 
     protected $main_url = 'https://lxapi.lexiangla.com/cgi-bin';
 
