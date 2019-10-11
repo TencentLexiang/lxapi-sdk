@@ -71,17 +71,17 @@ Trait DocTrait
             'data' => [
                 'type' => 'file',
                 'attributes' => [
-                    'team_id'      => isset($attributes['team_id']) ? $attributes['team_id'] : "",
                     'downloadable'  => $attributes['downloadable'],
                     'picture_url'   => isset($attributes['picture_url']) ? $attributes['picture_url'] : "",
                 ]
             ],
-            'state' => $state
         ];
 
         $file['data']['relationships']['category']['data']['type'] = 'category';
         $file['data']['relationships']['category']['data']['id'] = $options['category_id'];
-        return $this->forStaff($staff_id)->post('files', $file);
+        $file['data']['relationships']['team']['data']['type'] = 'team';
+        $file['data']['relationships']['team']['data']['id'] = $options['team_id'];
+        return $this->forStaff($staff_id)->post('files?state='.$state, $file);
     }
 
     private function getDocCOSParam($file_name, $type)
