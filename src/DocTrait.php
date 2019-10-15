@@ -41,6 +41,11 @@ Trait DocTrait
             $document['data']['relationships']['directory']['data']['type'] = 'directory';
             $document['data']['relationships']['directory']['data']['id'] = $options['directory_id'];
         }
+        if (!empty($options['privilege'])) {
+            foreach ($options['privilege'] as $privilege) {
+                $document['data']['relationships']['privilege']['data'][] = $privilege;
+            }
+        }
         if (!empty($options['attachments'])) {
             foreach ($options['attachments'] as $attachment_id) {
                 $document['data']['relationships']['attachments']['data'][] = [
@@ -52,7 +57,7 @@ Trait DocTrait
         return $this->forStaff($staff_id)->post('docs', $document);
     }
 
-    public function postFile($staff_id, $file_path,  $attributes, $options = [])
+    public function postFile($staff_id, $file_path, $options = [])
     {
         $this->staff_id = $staff_id;
         if (!file_exists($file_path)) {
@@ -67,21 +72,44 @@ Trait DocTrait
         if (empty($etag)) {
             throw new \Exception("上传到腾讯云cos存储失败");
         }
-        $file = [
+        $document = [
             'data' => [
-                'type' => 'file',
-                'attributes' => [
-                    'downloadable'  => $attributes['downloadable'],
-                    'picture_url'   => isset($attributes['picture_url']) ? $attributes['picture_url'] : "",
-                ]
+                'type' => 'file'
             ],
         ];
 
-        $file['data']['relationships']['category']['data']['type'] = 'category';
-        $file['data']['relationships']['category']['data']['id'] = $options['category_id'];
-        $file['data']['relationships']['team']['data']['type'] = 'team';
-        $file['data']['relationships']['team']['data']['id'] = $options['team_id'];
-        return $this->forStaff($staff_id)->post('files?state='.$state, $file);
+        if (isset($options['name'])) {
+            $document['data']['attributes']['name'] = $options['name'];
+        }
+
+        if (isset($options['downloadable'])) {
+            $document['data']['attributes']['downloadable'] = $options['downloadable'];
+        }
+        if (isset($options['picture_url'])) {
+            $document['data']['attributes']['picture_url'] = $options['picture_url'];
+        }
+        if (isset($options['privilege_type'])) {
+            $document['data']['attributes']['privilege_type'] = $options['privilege_type'];
+        }
+        if (!empty($options['privilege'])) {
+            foreach ($options['privilege'] as $privilege) {
+                $document['data']['relationships']['privilege']['data'][] = $privilege;
+            }
+        }
+        if (isset($options['category_id'])) {
+            $document['data']['relationships']['category']['data']['type'] = 'category';
+            $document['data']['relationships']['category']['data']['id'] = $options['category_id'];
+        }
+
+        if (isset($options['team_id'])) {
+            $document['data']['relationships']['team']['data']['type'] = 'team';
+            $document['data']['relationships']['team']['data']['id'] = $options['team_id'];
+        }
+        if (isset($options['directory_id'])) {
+            $document['data']['relationships']['directory']['data']['type'] = 'directory';
+            $document['data']['relationships']['directory']['data']['id'] = $options['directory_id'];
+        }
+        return $this->forStaff($staff_id)->post('files?state='.$state, $document);
     }
 
     private function getDocCOSParam($file_name, $type)
