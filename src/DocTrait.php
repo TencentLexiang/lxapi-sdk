@@ -56,14 +56,12 @@ Trait DocTrait
         }
         return $this->forStaff($staff_id)->post('docs', $document);
     }
-
-    public function postFile($staff_id, $file_path, $options = [])
+    public function uploadDoc($staff_id, $file_path, $options = [])
     {
         $this->staff_id = $staff_id;
         if (!file_exists($file_path)) {
             throw new \Exception("上传文件路径不存在");
         }
-
         $cos_data = $this->postCosFile($file_path, 'file');
         if (empty($cos_data)) {
             throw new \Exception("上传到腾讯云cos存储或者获取签名失败");
@@ -74,14 +72,12 @@ Trait DocTrait
         }
         $document = [
             'data' => [
-                'type' => 'file'
+                'type' => 'doc'
             ],
         ];
-
         if (isset($options['name'])) {
             $document['data']['attributes']['name'] = $options['name'];
         }
-
         if (isset($options['downloadable'])) {
             $document['data']['attributes']['downloadable'] = $options['downloadable'];
         }
@@ -100,7 +96,6 @@ Trait DocTrait
             $document['data']['relationships']['category']['data']['type'] = 'category';
             $document['data']['relationships']['category']['data']['id'] = $options['category_id'];
         }
-
         if (isset($options['team_id'])) {
             $document['data']['relationships']['team']['data']['type'] = 'team';
             $document['data']['relationships']['team']['data']['id'] = $options['team_id'];
@@ -109,26 +104,7 @@ Trait DocTrait
             $document['data']['relationships']['directory']['data']['type'] = 'directory';
             $document['data']['relationships']['directory']['data']['id'] = $options['directory_id'];
         }
-        return $this->forStaff($staff_id)->post('files?state='.$state, $document);
-    }
-
-    private function getDocCOSParam($file_name, $type)
-    {
-        $data = [
-            'filename' => $file_name,
-            'type'      => $type
-        ];
-
-        $client = new \GuzzleHttp\Client();
-        $this->response = $client->request('POST', $this->main_url . '/' . $this->verson . '/docs/cos-param', [
-            'json' => $data,
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->getAccessToken(),
-                'StaffID' => $this->staff_id,
-            ],
-        ]);
-
-        return json_decode($this->response->getBody()->getContents(), true);
+        return $this->forStaff($staff_id)->post('docs/upload?state='.$state, $document);
     }
 
     public function patchDoc($staff_id, $doc_id, $options)
@@ -138,15 +114,12 @@ Trait DocTrait
                 'type' => 'doc',
             ]
         ];
-
         if (isset($options['title'])) {
             $document['data']['attributes']['title'] = $options['title'];
         }
-
         if (isset($options['content'])) {
             $document['data']['attributes']['content'] = $options['content'];
         }
-
         if (isset($options['privilege_type'])) {
             $document['data']['attributes']['privilege_type'] = $options['privilege_type'];
         }
@@ -183,17 +156,14 @@ Trait DocTrait
         }
         return $this->forStaff($staff_id)->patch('docs/' . $doc_id, $document);
     }
-
     public function deleteDoc($staff_id, $doc_id)
     {
         return $this->forStaff($staff_id)->delete('docs/' . $doc_id);
     }
-
     public function getDoc($id, $request = [])
     {
         return $this->get('docs/' . $id, $request);
     }
-
     public function postDirectory($staff_id, $attributes, $options = [])
     {
         $document = [
@@ -212,7 +182,6 @@ Trait DocTrait
                 ],
             ]
         ];
-
         if (isset($options['parent_id'])) {
             $document['data']['relationships']['parent']['data']['type'] = 'directory';
             $document['data']['relationships']['parent']['data']['id'] = $options['parent_id'];
