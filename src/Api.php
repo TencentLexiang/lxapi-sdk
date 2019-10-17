@@ -198,7 +198,8 @@ class Api
         curl_setopt($ch, CURLOPT_RETURNTRANSFER,1); //设为TRUE把curl_exec()结果转化为字串，而不是直接输出
         curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST,"PUT"); //设置请求方式
-        curl_setopt($ch, CURLOPT_POSTFIELDS, fopen($object['filepath'], 'r'));//设置提交的字符串
+        curl_setopt($ch, CURLOPT_POSTFIELDS, file_get_contents($object['filepath']));//设置提交的字符串
+
         $output = curl_exec($ch);
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         // 根据头大小去获取头信息内容
@@ -206,11 +207,10 @@ class Api
 
         $response_header = [];
         foreach ($raw_response_headers as $key => $raw_response_header) {
-            if ($key == 0) {
-                continue;
+            if (strpos($raw_response_header, 'ETag') === 0) {
+                list($item, $value) = explode(":", $raw_response_header);
+                $response_header[$item] = trim($value);
             }
-            list($item, $value) = explode(":", $raw_response_header);
-            $response_header[$item] = trim($value);
         }
 
         $etag =  isset($response_header['ETag']) ? trim($response_header['ETag'], '"') : "";
