@@ -18,11 +18,6 @@ Trait DocTrait
         if (isset($options['privilege_type'])) {
             $document['data']['attributes']['privilege_type'] = $options['privilege_type'];
         }
-        if (isset($options['privilege'])) {
-            foreach ($options['privilege'] as $privilege) {
-                $document['data']['relationships']['privilege']['data'][] = $privilege;
-            }
-        }
         if (isset($options['source'])) {
             $document['data']['attributes']['source'] = $options['source'];
         }
@@ -123,11 +118,6 @@ Trait DocTrait
         if (isset($options['privilege_type'])) {
             $document['data']['attributes']['privilege_type'] = $options['privilege_type'];
         }
-        if (isset($options['privilege'])) {
-            foreach ($options['privilege'] as $privilege) {
-                $document['data']['relationships']['privilege']['data'][] = $privilege;
-            }
-        }
         if (isset($options['source'])) {
             $document['data']['attributes']['source'] = $options['source'];
         }
@@ -145,6 +135,12 @@ Trait DocTrait
         if (isset($options['directory_id'])) {
             $document['data']['relationships']['directory']['data']['type'] = 'directory';
             $document['data']['relationships']['directory']['data']['id'] = $options['directory_id'];
+        }
+
+        if (!empty($options['privilege'])) {
+            foreach ($options['privilege'] as $privilege) {
+                $document['data']['relationships']['privilege']['data'][] = $privilege;
+            }
         }
         if (!empty($options['attachments'])) {
             foreach ($options['attachments'] as $attachment_id) {
