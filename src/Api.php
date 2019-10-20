@@ -13,8 +13,9 @@ class Api
     use ThreadTrait;
     use CategoryTrait;
     use CommentTrait;
-    use LikeTrait;
     use LiveTrait;
+    use TeamTrait;
+    use AttachmentTrait;
 
     protected $main_url = 'https://lxapi.lexiangla.com/cgi-bin';
 
@@ -94,6 +95,13 @@ class Api
         }
     }
 
+    /**
+     * 上传附件
+     * @param $staff_id
+     * @param $type
+     * @param $file
+     * @return mixed
+     */
     public function postAsset($staff_id, $type, $file)
     {
         $data = [
@@ -117,32 +125,46 @@ class Api
         return json_decode($this->response->getBody()->getContents(), true);
     }
 
-    public function postAttachment($staff_id, $target_type, $target_id, $file, $options = [])
+    /**
+     * 上传文件至腾讯云cos上
+     * @param $file_path
+     * @param $upload_type
+     * @return array|bool [etag, state]
+     */
+    private function postCosFile($file_path, $upload_type)
+    {
+        $filename = pathinfo($file_path, PATHINFO_BASENAME);
+
+        $cos_param = $this->getDocCOSParam($filename, $upload_type);
+
+        if (empty($cos_param['options']) || empty($cos_param['object'])) {
+            return false;
+        }
+
+        $object = $cos_param['object'];
+        $object['filepath'] = $file_path;
+
+        return [$this->qcloudPutObject($object, $cos_param['options']), $object['state']];
+    }
+
+    /**
+     * 请求乐享获取腾讯云签名参数
+     * @param $file_name
+     * @param $type
+     * @return mixed
+     */
+    private function getDocCOSParam($file_name, $type)
     {
         $data = [
-            [
-                'name'     => 'file',
-                'contents' => $file,
-            ],
-            [
-                'name'     => 'target_type',
-                'contents' => $target_type,
-            ],
-            [
-                'name'     => 'target_id',
-                'contents' => $target_id,
-            ],
-            [
-                'name' => 'downloadable',
-                'contents' => !empty($options['downloadable']) ? 1 : 0,
-            ]
+            'filename' => $file_name,
+            'type'      => $type
         ];
         $client = new \GuzzleHttp\Client();
-        $this->response = $client->request('POST', $this->main_url.'/'.$this->verson.'/attachments', [
-            'multipart' => $data,
-            'headers'  => [
+        $this->response = $client->request('POST', $this->main_url . '/' . $this->verson . '/docs/cos-param', [
+            'json' => $data,
+            'headers' => [
                 'Authorization' => 'Bearer ' . $this->getAccessToken(),
-                'StaffID' => $staff_id,
+                'StaffID' => $this->staff_id,
             ],
         ]);
         return json_decode($this->response->getBody()->getContents(), true);
@@ -176,7 +198,8 @@ class Api
         curl_setopt($ch, CURLOPT_RETURNTRANSFER,1); //设为TRUE把curl_exec()结果转化为字串，而不是直接输出
         curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST,"PUT"); //设置请求方式
-        curl_setopt($ch, CURLOPT_POSTFIELDS, fopen($object['filepath'], 'r'));//设置提交的字符串
+        curl_setopt($ch, CURLOPT_POSTFIELDS, file_get_contents($object['filepath']));//设置提交的字符串
+
         $output = curl_exec($ch);
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         // 根据头大小去获取头信息内容
@@ -184,84 +207,32 @@ class Api
 
         $response_header = [];
         foreach ($raw_response_headers as $key => $raw_response_header) {
-            if ($key == 0) {
-                continue;
+            if (strpos($raw_response_header, 'ETag') === 0) {
+                list($item, $value) = explode(":", $raw_response_header);
+                $response_header[$item] = trim($value);
             }
-            list($item, $value) = explode(":", $raw_response_header);
-            $response_header[$item] = trim($value);
         }
 
         $etag =  isset($response_header['ETag']) ? trim($response_header['ETag'], '"') : "";
         return $etag;
     }
 
-
     /**
-     * 获取cos　data
-     * @param $file_path
-     * @param $upload_type
-     * @return array|bool [etag, state]
+     * 批量同步员工生日和入职日
+     * @param $staffs
+     * @return mixed
      */
-    private function postCosFile($file_path, $upload_type)
+    public function putStaffsAnniversaries($staffs)
     {
-        $filename = pathinfo($file_path, PATHINFO_BASENAME);
-
-        $cos_param = $this->getDocCOSParam($filename, $upload_type);
-
-        if (empty($cos_param['options']) || empty($cos_param['object'])) {
-            return false;
-        }
-
-        $object = $cos_param['object'];
-        $object['filepath'] = $file_path;
-
-        return [$this->qcloudPutObject($object, $cos_param['options']), $object['state']];
-    }
-
-
-    public function postCOSAttachment($staff_id, $file_path, $target_type, $target_id, $options = [])
-    {
-        $this->staff_id = $staff_id;
-
-        if ($cos_data = $this->postCosFile($file_path, 'attachment')) {
-
-            list($etag, $state) = $cos_data;
-
-            if (empty($etag)) {
-                return false;
-            }
-
-            $data = [
-                'state' => $state,
-                'target_type' => $target_type,
-                'target_id'   => $target_id,
-                'downloadable' => !empty($options['downloadable'])
-            ];
-
-            $client = new \GuzzleHttp\Client();
-            $this->response = $client->request('POST', $this->main_url . '/' . $this->verson . '/attachments/cos-attachment', [
-                'json' => $data,
+        $client = new \GuzzleHttp\Client();
+        $this->response = $client->request('PUT', $this->main_url . '/' . $this->verson . '/wish/staffs-anniversaries', [
+                'json' => compact('staffs'),
                 'headers' => [
                     'Authorization' => 'Bearer ' . $this->getAccessToken(),
                     'StaffID' => $this->staff_id,
                 ],
             ]);
-
-            $statusCode = $this->response->getStatusCode();
-
-            return $statusCode === 200 ? $this->response->getBody()->getContents() : false;
-        }
-
-        return false;
-    }
-
-    public function postCOSAttachments($file_paths, $target_type, $target_id, $options = [])
-    {
-        $results = [];
-        foreach ($file_paths as $file_path) {
-            $results[$file_path] = $this->postCOSAttachment($file_path, $target_type, $target_id, $options);
-        }
-        return $results;
+        return json_decode($this->response->getBody()->getContents(), true);
     }
 
     /**
