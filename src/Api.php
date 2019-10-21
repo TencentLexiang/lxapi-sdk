@@ -13,6 +13,7 @@ class Api
     use ThreadTrait;
     use CategoryTrait;
     use CommentTrait;
+    use LikeTrait;
     use LiveTrait;
     use TeamTrait;
     use AttachmentTrait;
