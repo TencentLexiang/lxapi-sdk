@@ -25,4 +25,23 @@ Trait CategoryTrait
         }
         return $this->forStaff($staff_id)->post('categories', $document);
     }
+
+    public function patchCategory($staff_id, $category_id, $attributes)
+    {
+        $document = [
+            'data' => [
+                'type' => 'category',
+                'attributes' => [
+                    'name' => $attributes['name']
+                ]
+            ]
+        ];
+        return $this->forStaff($staff_id)->patch('categories/' . $category_id, $document);
+    }
+
+    function deleteCategory($staff_id, $category_id)
+    {
+        return $this->forStaff($staff_id)->delete('categories/' . $category_id);
+    }
+
 }
