@@ -61,4 +61,9 @@ Trait TeamTrait
         return $this->forStaff($staff_id)->patch('teams/' . $team_id, $team);
     }
 
+    function hideTeam($staff_id, $team_id)
+    {
+        return $this->forStaff($staff_id)->delete('teams/' . $team_id . '/hide');
+    }
+
 }
