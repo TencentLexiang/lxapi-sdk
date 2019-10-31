@@ -17,10 +17,14 @@ class Api
     use TeamTrait;
     use PointTrait;
     use AttachmentTrait;
+ 	use VideoTrait;
     use LiveTrait;
     use ClazzTrait;
 
     protected $main_url = 'https://lxapi.lexiangla.com/cgi-bin';
+
+   
+
 
     protected $verson = 'v1';
 
@@ -88,7 +92,6 @@ class Api
         $headers["StaffID"] = $this->staff_id;
         if (!empty($this->listeners)) {
             $data['meta']['listeners'] = $this->listeners;
-            $this->listeners = [];
         }
         if (!empty($data)) {
             $headers["Content-Type"] = 'application/vnd.api+json';
