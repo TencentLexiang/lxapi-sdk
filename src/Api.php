@@ -16,8 +16,8 @@ class Api
     use LikeTrait;
     use TeamTrait;
     use AttachmentTrait;
-
-    protected $main_url = 'https://lxapi.lexiangla.com/cgi-bin';
+    use VideoTrait;
+    protected $main_url = 'http://lxapi.swan.local/cgi-bin';
 
     protected $verson = 'v1';
 
@@ -28,6 +28,8 @@ class Api
     protected $app_secret;
 
     protected $staff_id;
+
+    protected $listeners;
 
     public function __construct($app_key, $app_secret)
     {
@@ -76,6 +78,9 @@ class Api
     {
         $headers["Authorization"] = 'Bearer ' . $this->getAccessToken();
         $headers["StaffID"] = $this->staff_id;
+        if (!empty($this->listeners)) {
+            $data['meta']['listeners'] = $this->listeners;
+        }
         if (!empty($data)) {
             $headers["Content-Type"] = 'application/vnd.api+json';
         }
@@ -226,12 +231,12 @@ class Api
     {
         $client = new \GuzzleHttp\Client();
         $this->response = $client->request('PUT', $this->main_url . '/' . $this->verson . '/wish/staffs-anniversaries', [
-                'json' => compact('staffs'),
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $this->getAccessToken(),
-                    'StaffID' => $this->staff_id,
-                ],
-            ]);
+            'json' => compact('staffs'),
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->getAccessToken(),
+                'StaffID' => $this->staff_id,
+            ],
+        ]);
         return json_decode($this->response->getBody()->getContents(), true);
     }
 
@@ -250,6 +255,18 @@ class Api
     public function forStaff($staff_id)
     {
         $this->staff_id = $staff_id;
+        return $this;
+    }
+
+    /**
+     * @param $listeners
+     * @return $this
+     */
+    public function setListeners($listeners)
+    {
+        if (is_array($listeners)) {
+            $this->listeners = $listeners;
+        }
         return $this;
     }
 }
