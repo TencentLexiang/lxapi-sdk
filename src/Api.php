@@ -16,8 +16,8 @@ class Api
     use LikeTrait;
     use TeamTrait;
     use AttachmentTrait;
-    use VideoTrait;
-    protected $main_url = 'http://lxapi.swan.local/cgi-bin';
+
+    protected $main_url = 'https://lxapi.lexiangla.com/cgi-bin';
 
     protected $verson = 'v1';
 
