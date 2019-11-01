@@ -15,6 +15,7 @@ class Api
     use CommentTrait;
     use LikeTrait;
     use TeamTrait;
+    use PointTrait;
     use AttachmentTrait;
 
     protected $main_url = 'https://lxapi.lexiangla.com/cgi-bin';
