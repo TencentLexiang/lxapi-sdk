@@ -81,6 +81,7 @@ class Api
         $headers["StaffID"] = $this->staff_id;
         if (!empty($this->listeners)) {
             $data['meta']['listeners'] = $this->listeners;
+            $this->listeners = [];
         }
         if (!empty($data)) {
             $headers["Content-Type"] = 'application/vnd.api+json';
