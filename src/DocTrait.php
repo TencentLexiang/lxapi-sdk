@@ -142,7 +142,8 @@ Trait DocTrait
                 $document['data']['relationships']['privilege']['data'][] = $privilege;
             }
         }
-        if (!empty($options['attachments'])) {
+        if (isset($options['attachments'])) {
+            $document['data']['relationships']['attachments']['data'] = [];
             foreach ($options['attachments'] as $attachment_id) {
                 $document['data']['relationships']['attachments']['data'][] = [
                     'type' => 'attachment',
