@@ -104,6 +104,16 @@ Trait DocTrait
 
     public function patchDoc($staff_id, $doc_id, $options)
     {
+        if (isset($options['target_type']) && $options['target_type'] == 'file') {
+            return $this->patchFile($staff_id, $doc_id, $options);
+        } else {
+            return $this->patchDocument($staff_id, $doc_id, $options);
+        }
+
+    }
+
+    public function patchDocument($staff_id, $doc_id, $options)
+    {
         $document = [
             'data' => [
                 'type' => 'doc',
@@ -151,8 +161,46 @@ Trait DocTrait
                 ];
             }
         }
-        return $this->forStaff($staff_id)->patch('docs/' . $doc_id, $document);
+        return $this->forStaff($staff_id)->patch('docs/' . $doc_id . '?target_type=document', $document);
     }
+
+    public function patchFile($staff_id, $doc_id, $options)
+    {
+        $document = [
+            'data' => [
+                'type' => 'doc',
+            ]
+        ];
+        if (isset($options['name'])) {
+            $document['data']['attributes']['name'] = $options['name'];
+        }
+        if (isset($options['downloadable'])) {
+            $document['data']['attributes']['downloadable'] = $options['downloadable'];
+        }
+        if (isset($options['privilege_type'])) {
+            $document['data']['attributes']['privilege_type'] = $options['privilege_type'];
+        }
+        if (isset($options['category_id'])) {
+            $document['data']['relationships']['category']['data']['type'] = 'category';
+            $document['data']['relationships']['category']['data']['id'] = $options['category_id'];
+        }
+        if (isset($options['team_id'])) {
+            $document['data']['relationships']['team']['data']['type'] = 'team';
+            $document['data']['relationships']['team']['data']['id'] = $options['team_id'];
+        }
+        if (isset($options['directory_id'])) {
+            $document['data']['relationships']['directory']['data']['type'] = 'directory';
+            $document['data']['relationships']['directory']['data']['id'] = $options['directory_id'];
+        }
+
+        if (!empty($options['privilege'])) {
+            foreach ($options['privilege'] as $privilege) {
+                $document['data']['relationships']['privilege']['data'][] = $privilege;
+            }
+        }
+        return $this->forStaff($staff_id)->patch('docs/' . $doc_id . '?target_type=file', $document);
+    }
+
     public function deleteDoc($staff_id, $doc_id)
     {
         return $this->forStaff($staff_id)->delete('docs/' . $doc_id);
