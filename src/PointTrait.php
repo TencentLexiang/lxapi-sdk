@@ -28,4 +28,9 @@ Trait PointTrait
 
         return $this->forStaff($staff_id)->post('points', $point);
     }
+
+    function getPoint($request = [])
+    {
+        return $this->get('points', $request);
+    }
 }
