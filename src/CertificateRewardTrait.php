@@ -2,17 +2,14 @@
 
 namespace Lexiangla\Openapi;
 
-Trait PointTrait
+Trait CertificateRewardTrait
 {
-    function postPoint($staff_id, $attributes, $options = [])
+    function postCertificateReward($staff_id, $cer_id, $attributes, $options = [])
     {
-        $point = [
+        $certificate_reward = [
             'data' => [
-                'type' => 'point',
+                'type' => 'certificate_reward',
                 'attributes' => [
-                    'op_type' => $attributes['op_type'],
-                    'point' => $attributes['point'],
-                    'reason' => $attributes['reason'],
                     'is_notify' => $attributes['is_notify'],
                 ],
                 'relationships' => [
@@ -26,11 +23,11 @@ Trait PointTrait
             ]
         ];
 
-        return $this->forStaff($staff_id)->post('points', $point);
+        return $this->forStaff($staff_id)->post('certificates/' . $cer_id . '/rewards', $certificate_reward);
     }
 
-    function getPoint($request = [])
+    public function deleteCertificateReward($staff_id, $cer_id, $code)
     {
-        return $this->get('points', $request);
+        return $this->forStaff($staff_id)->delete('certificates/' . $cer_id . '/rewards?code=' . $code);
     }
 }
