@@ -67,11 +67,11 @@ Trait QuestionTrait
         $document = [
             'data' => [
                 'type' => 'answer',
-                'attributes' => [
-                    'content' => $attributes['content'],
-                ]
             ]
         ];
+        foreach ($attributes as $k => $v) {
+            $document['data']['attributes'][$k] = $v;
+        }
         return $this->forStaff($staff_id)->patch('questions/' . $question_id . '/answers/' . $answer_id, $document);
     }
 
