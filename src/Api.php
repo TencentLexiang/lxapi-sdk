@@ -17,6 +17,7 @@ class Api
     use TeamTrait;
     use PointTrait;
     use AttachmentTrait;
+    use LiveTrait;
 
     protected $main_url = 'https://lxapi.lexiangla.com/cgi-bin';
 
