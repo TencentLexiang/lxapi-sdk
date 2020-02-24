@@ -16,10 +16,6 @@ Trait LiveTrait
                 ],
             ]
         ];
-        $document['data']['relationships']['streamer']['data'] = [
-            'type' => $attributes['target_type'],
-            'id'   => $attributes['target_id'],
-        ];
 
         foreach ($attributes['streamer_ids'] as $streamer_id) {
             $document['data']['relationships']['streamer']['data'][] = [
