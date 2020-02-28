@@ -67,6 +67,11 @@ class Api
         return $this->request('POST', $uri, $data);
     }
 
+    public function put($uri, $data = [])
+    {
+        return $this->request('PUT', $uri, $data);
+    }
+
     public function patch($uri, $data = [])
     {
         return $this->request('PATCH', $uri, $data);

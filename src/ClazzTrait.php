@@ -4,7 +4,7 @@ namespace Lexiangla\Openapi;
 
 Trait ClazzTrait
 {
-    public function postClazz($staff_id, $attributes, $options = [])
+    protected function prepareDocument($attributes, $options = [])
     {
         $document = [
             'data' => [
@@ -43,6 +43,20 @@ Trait ClazzTrait
         $document['data']['attributes'] += $options;
 
         echo json_encode($document) . PHP_EOL;
+
+        return $document;
+    }
+
+    public function postClazz($staff_id, $attributes, $options = [])
+    {
+        $document = $this->prepareDocument($attributes, $options);
         return $this->forStaff($staff_id)->post('classes', $document);
+    }
+
+    public function putClazz($staff_id, $clazz_id, $attributes, $options = [])
+    {
+        $document = $this->prepareDocument($attributes, $options);
+        return $this->forStaff($staff_id)->put('classes/' . $clazz_id, $document);
+
     }
 }
