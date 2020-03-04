@@ -57,6 +57,11 @@ Trait ClazzTrait
     {
         $document = $this->prepareDocument($attributes, $options);
         return $this->forStaff($staff_id)->put('classes/' . $clazz_id, $document);
-
     }
+    
+    public function deleteClazz($staff_id, $clazz_id)
+    {
+        return $this->forStaff($staff_id)->delete('classes/' . $clazz_id);
+    }
+
 }
