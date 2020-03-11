@@ -24,6 +24,15 @@ Trait DocTrait
         if (isset($options['reship_url'])) {
             $document['data']['attributes']['reship_url'] = $options['reship_url'];
         }
+        if (isset($options['allow_comment'])) {
+            $document['data']['attributes']['allow_comment'] = $options['allow_comment'];
+        }
+        if (isset($options['picture_url'])) {
+            $document['data']['attributes']['picture_url'] = $options['picture_url'];
+        }
+        if (isset($options['signature'])) {
+            $document['data']['attributes']['signature'] = $options['signature'];
+        }
         if (isset($options['category_id'])) {
             $document['data']['relationships']['category']['data']['type'] = 'category';
             $document['data']['relationships']['category']['data']['id'] = $options['category_id'];
@@ -102,6 +111,24 @@ Trait DocTrait
         return $this->forStaff($staff_id)->post('docs/upload?state='.$state, $document);
     }
 
+    public function reUploadDoc($staff_id, $doc_id, $file_path)
+    {
+        $this->staff_id = $staff_id;
+        if (!file_exists($file_path)) {
+            throw new \Exception("上传文件路径不存在");
+        }
+        $cos_data = $this->postCosFile($file_path, 'file');
+        if (empty($cos_data)) {
+            throw new \Exception("上传到腾讯云cos存储或者获取签名失败");
+        }
+        list($etag, $state) = $cos_data;
+        if (empty($etag)) {
+            throw new \Exception("上传到腾讯云cos存储失败");
+        }
+
+        return $this->forStaff($staff_id)->patch('docs/' . $doc_id . '/re-upload?state='.$state);
+    }
+
     public function patchDoc($staff_id, $doc_id, $options)
     {
         if (isset($options['target_type']) && $options['target_type'] == 'file') {
@@ -133,6 +160,15 @@ Trait DocTrait
         }
         if (isset($options['reship_url'])) {
             $document['data']['attributes']['reship_url'] = $options['reship_url'];
+        }
+        if (isset($options['allow_comment'])) {
+            $document['data']['attributes']['allow_comment'] = $options['allow_comment'];
+        }
+        if (isset($options['picture_url'])) {
+            $document['data']['attributes']['picture_url'] = $options['picture_url'];
+        }
+        if (isset($options['signature'])) {
+            $document['data']['attributes']['signature'] = $options['signature'];
         }
         if (isset($options['category_id'])) {
             $document['data']['relationships']['category']['data']['type'] = 'category';
@@ -179,6 +215,15 @@ Trait DocTrait
         }
         if (isset($options['privilege_type'])) {
             $document['data']['attributes']['privilege_type'] = $options['privilege_type'];
+        }
+        if (isset($options['allow_comment'])) {
+            $document['data']['attributes']['allow_comment'] = $options['allow_comment'];
+        }
+        if (isset($options['picture_url'])) {
+            $document['data']['attributes']['picture_url'] = $options['picture_url'];
+        }
+        if (isset($options['signature'])) {
+            $document['data']['attributes']['signature'] = $options['signature'];
         }
         if (isset($options['category_id'])) {
             $document['data']['relationships']['category']['data']['type'] = 'category';
@@ -275,3 +320,4 @@ Trait DocTrait
         return $this->forStaff($staff_id)->patch((string)$path, $document);
     }
 }
+
