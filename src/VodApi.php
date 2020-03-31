@@ -20,7 +20,7 @@ class VodApi
     /** @var array $tempCertificate */
     private $tempCertificate;
     // 自定义数据
-    private $localVodStroagePath;
+    private $localVodStoragePath;
     private $localCoverFilePath;
     private $signature;
     // 视频信息
@@ -37,7 +37,7 @@ class VodApi
      */
     public function __construct($signature, $localVodStroagePath, $localCoverFilePath)
     {
-        $this->localVodStroagePath = $localVodStroagePath;
+        $this->localVodStoragePath = $localVodStroagePath;
         $this->localCoverFilePath = $localCoverFilePath;
         $this->signature = $signature;
     }
@@ -82,7 +82,7 @@ class VodApi
     {
         if ($this->mediaStoragePath) {
             $this->uploadCos(
-                $this->localVodStroagePath,
+                $this->localVodStoragePath,
                 $this->storageBucket,
                 $this->mediaStoragePath
             );
@@ -115,10 +115,10 @@ class VodApi
      */
     private function applyUpload()
     {
-        $video_info = pathinfo($this->localVodStroagePath);
+        $video_info = pathinfo($this->localVodStoragePath);
         $this->videoType = $video_info['extension'];
         $this->videoName = $video_info['filename'];
-        $this->videoSize = filesize($this->localVodStroagePath);
+        $this->videoSize = filesize($this->localVodStoragePath);
 
         /** @var Client $client */
         $client = new HttpClient();
