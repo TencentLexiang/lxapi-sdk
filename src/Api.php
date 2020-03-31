@@ -20,11 +20,9 @@ class Api
  	use VideoTrait;
     use LiveTrait;
     use ClazzTrait;
+    use CourseTrait;
 
     protected $main_url = 'https://lxapi.lexiangla.com/cgi-bin';
-
-   
-
 
     protected $verson = 'v1';
 
