@@ -1,4 +1,5 @@
 <?php
+
 namespace Lexiangla\Openapi;
 
 use GuzzleHttp\Psr7\Request;
@@ -17,9 +18,11 @@ class Api
     use TeamTrait;
     use PointTrait;
     use AttachmentTrait;
+    use VideoTrait;
     use LiveTrait;
     use ClazzTrait;
     use CourseTrait;
+    use CertificateRewardTrait;
 
     protected $main_url = 'https://lxapi.lexiangla.com/cgi-bin';
 
@@ -43,7 +46,7 @@ class Api
 
     public function getAccessToken()
     {
-        $options = ['form_params' =>[
+        $options = ['form_params' => [
             'grant_type' => 'client_credentials',
             'app_key' => $this->key,
             'app_secret' => $this->app_secret
@@ -57,7 +60,7 @@ class Api
     public function get($uri, $data = [])
     {
         if ($data) {
-            $uri .= ( '?' . http_build_query($data));
+            $uri .= ('?' . http_build_query($data));
         }
         return $this->request('GET', $uri);
     }
@@ -94,7 +97,7 @@ class Api
         if (!empty($data)) {
             $headers["Content-Type"] = 'application/vnd.api+json';
         }
-        $request = new Request($method, $this->main_url.'/'.$this->verson.'/'.$uri, $headers, json_encode($data));
+        $request = new Request($method, $this->main_url . '/' . $this->verson . '/' . $uri, $headers, json_encode($data));
         $client = new JsonApiClient(new Client());
 
         $this->response = $client->sendRequest($request);
@@ -121,7 +124,7 @@ class Api
     {
         $data = [
             [
-                'name'     => 'file',
+                'name' => 'file',
                 'contents' => $file,
             ],
             [
@@ -130,9 +133,9 @@ class Api
             ]
         ];
         $client = new \GuzzleHttp\Client();
-        $this->response = $client->request('POST', $this->main_url.'/'.$this->verson.'/assets', [
+        $this->response = $client->request('POST', $this->main_url . '/' . $this->verson . '/assets', [
             'multipart' => $data,
-            'headers'  => [
+            'headers' => [
                 'Authorization' => 'Bearer ' . $this->getAccessToken(),
                 'StaffID' => $staff_id,
             ],
@@ -172,7 +175,7 @@ class Api
     {
         $data = [
             'filename' => $file_name,
-            'type'      => $type
+            'type' => $type
         ];
         $client = new \GuzzleHttp\Client();
         $this->response = $client->request('POST', $this->main_url . '/' . $this->verson . '/docs/cos-param', [
@@ -203,16 +206,16 @@ class Api
             ] + $object['headers'];
 
         $raw_request_headers = [];
-        foreach ($headers as  $key => $header) {
+        foreach ($headers as $key => $header) {
             $raw_request_headers[] = $key . ":" . $header;
         }
 
         $ch = curl_init(); //初始化CURL句柄
         curl_setopt($ch, CURLOPT_URL, $url); //设置请求的URL
-        curl_setopt ($ch, CURLOPT_HTTPHEADER, $raw_request_headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1); //设为TRUE把curl_exec()结果转化为字串，而不是直接输出
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $raw_request_headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); //设为TRUE把curl_exec()结果转化为字串，而不是直接输出
         curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST,"PUT"); //设置请求方式
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT"); //设置请求方式
         curl_setopt($ch, CURLOPT_POSTFIELDS, file_get_contents($object['filepath']));//设置提交的字符串
 
         $output = curl_exec($ch);
@@ -228,7 +231,7 @@ class Api
             }
         }
 
-        $etag =  isset($response_header['ETag']) ? trim($response_header['ETag'], '"') : "";
+        $etag = isset($response_header['ETag']) ? trim($response_header['ETag'], '"') : "";
         return $etag;
     }
 
