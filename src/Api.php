@@ -34,11 +34,13 @@ class Api
 
     protected $app_secret;
 
+    protected $access_token = '';
+
     protected $staff_id;
 
     protected $listeners;
 
-    public function __construct($app_key, $app_secret)
+    public function __construct($app_key = '', $app_secret = '')
     {
         $this->key = $app_key;
         $this->app_secret = $app_secret;
@@ -46,7 +48,11 @@ class Api
 
     public function getAccessToken()
     {
-        $options = ['form_params' => [
+        if ($this->access_token) {
+            return $this->access_token;
+        }
+
+        $options = ['json' => [
             'grant_type' => 'client_credentials',
             'app_key' => $this->key,
             'app_secret' => $this->app_secret
@@ -54,7 +60,13 @@ class Api
         $client = new \GuzzleHttp\Client();
         $response = $client->post($this->main_url . '/token', $options);
         $response = json_decode($response->getBody()->getContents(), true);
-        return $response['access_token'];
+        $this->access_token = $response['access_token'];
+        return $this->access_token;
+    }
+
+    public function setAccessToken($access_token)
+    {
+        $this->access_token = $access_token;
     }
 
     public function get($uri, $data = [])
