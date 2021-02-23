@@ -18,7 +18,11 @@ class Service
 
     protected $suite_ticket;
 
-    public function __construct($suite_id, $suite_secret)
+    protected $suite_access_token = '';
+
+    protected $corp_access_token = '';
+
+    public function __construct($suite_id = '', $suite_secret = '')
     {
         $this->suite_id = $suite_id;
         $this->suite_secret = $suite_secret;
@@ -26,6 +30,10 @@ class Service
 
     public function getSuiteToken()
     {
+        if ($this->suite_access_token) {
+            return $this->suite_access_token;
+        }
+
         $options = ['json' => [
             'grant_type' => 'client_credentials',
             'suite_id' => $this->suite_id,
@@ -35,9 +43,14 @@ class Service
         $client = new \GuzzleHttp\Client();
         $response = $client->post($this->main_url . '/get_suite_token', $options);
         $response = json_decode($response->getBody()->getContents(), true);
-        return $response['suite_access_token'];
+        $this->suite_access_token = $response['suite_access_token'];
+        return $this->suite_access_token;
     }
 
+    public function setSuiteAccessToken($suite_access_token)
+    {
+        $this->suite_access_token = $suite_access_token;
+    }
 
     public function setSuiteTicket($suite_ticket)
     {
@@ -51,6 +64,10 @@ class Service
 
     public function getCorpAccessToken($company_id, $permanent_code)
     {
+        if ($this->corp_access_token) {
+            return $this->corp_access_token;
+        }
+
         $options = ['json' => [
             'grant_type' => 'client_credentials',
             'company_id' => $company_id,
@@ -59,7 +76,13 @@ class Service
         $client = new \GuzzleHttp\Client();
         $response = $client->post($this->main_url . '/get_corp_token?suite_access_token=' . $this->getSuiteToken(), $options);
         $response = json_decode($response->getBody()->getContents(), true);
-        return $response['access_token'];
+        $this->corp_access_token = $response['access_token'];
+        return $this->corp_access_token;
+    }
+
+    public function setCorpAccessToken($corp_access_token)
+    {
+        $this->corp_access_token = $corp_access_token;
     }
 
     public function getCorpClient($company_id, $permanent_code)
