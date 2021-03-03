@@ -21,7 +21,7 @@ Trait CommentTrait
 
 		if (isset($options['target_type']) && isset($options['target_id'])) {
 			$document['data']['relationships']['target']['data'] = [
-				'type' => $options['target_type'],
+				'type' => $options['target_ty`pe'],
 				'id'   => $options['target_id'],
 			];
 		}

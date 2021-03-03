@@ -234,17 +234,13 @@ class Api
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         // 根据头大小去获取头信息内容
         $raw_response_headers = explode("\r\n", trim(substr($output, 0, $header_size)));
-
-        $response_header = [];
         foreach ($raw_response_headers as $key => $raw_response_header) {
-            if (strpos($raw_response_header, 'ETag') === 0) {
+            if (stripos($raw_response_header, 'ETag') === 0) {
                 list($item, $value) = explode(":", $raw_response_header);
-                $response_header[$item] = trim($value);
+                $etag = trim(trim($value), '"');
+                return $etag;
             }
         }
-
-        $etag = isset($response_header['ETag']) ? trim($response_header['ETag'], '"') : "";
-        return $etag;
     }
 
     /**

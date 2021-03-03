@@ -31,6 +31,11 @@ Trait TeamTrait
             }
         }
 
+        if (isset($options['category_id'])) {
+            $document['data']['relationships']['category']['data']['type'] = 'category';
+            $document['data']['relationships']['category']['data']['id'] = $options['category_id'];
+        }
+
         return $this->forStaff($staff_id)->post('teams', $team);
     }
 
@@ -56,6 +61,11 @@ Trait TeamTrait
             foreach ($options['orgs'] as $privilege) {
                 $team['data']['relationships']['orgs']['data'][] = $privilege;
             }
+        }
+
+        if (isset($options['category_id'])) {
+            $document['data']['relationships']['category']['data']['type'] = 'category';
+            $document['data']['relationships']['category']['data']['id'] = $options['category_id'];
         }
 
         return $this->forStaff($staff_id)->patch('teams/' . $team_id, $team);
