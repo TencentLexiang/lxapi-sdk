@@ -12,7 +12,7 @@ Trait LiveTrait
                 'attributes' => [
                     'title' => $attributes['title'],
                     'started_at' => $attributes['started_at'],
-                    'intro' => '',
+
                 ],
             ]
         ];
@@ -39,6 +39,12 @@ Trait LiveTrait
         }
         if (isset($options['privilege_type'])) {
             $document['data']['attributes']['privilege_type'] = $options['privilege_type'];
+        }
+		if (isset($options['enable_question'])) {
+            $document['data']['attributes']['enable_question'] = $options['enable_question'];
+        }
+		if (isset($options['enable_comment'])) {
+            $document['data']['attributes']['enable_comment'] = $options['enable_comment'];
         }
         if (!empty($options['manager_ids'])) {
             foreach ($options['manager_ids'] as $manager_id) {
@@ -100,7 +106,16 @@ Trait LiveTrait
         if (isset($options['privilege_type'])) {
             $document['data']['attributes']['privilege_type'] = $options['privilege_type'];
         }
-        if (!empty($options['manager_ids'])) {
+		
+        if (isset($options['enable_question'])) {
+            $document['data']['attributes']['enable_question'] = $options['enable_question'];
+        }
+		if (isset($options['enable_comment'])) {
+		if (isset($options['enable_comment'])) {
+            $document['data']['attributes']['enable_comment'] = $options['enable_comment'];
+        }
+		
+		if (!empty($options['manager_ids'])) {
             foreach ($options['manager_ids'] as $manager_id) {
                 $document['data']['relationships']['managers']['data'][] = [
                     'type' => 'staff',
