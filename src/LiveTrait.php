@@ -12,7 +12,7 @@ Trait LiveTrait
                 'attributes' => [
                     'title' => $attributes['title'],
                     'started_at' => $attributes['started_at'],
-
+                    'intro' => '',
                 ],
             ]
         ];
