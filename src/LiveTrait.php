@@ -109,7 +109,7 @@ Trait LiveTrait
         if (isset($options['enable_question'])) {
             $document['data']['attributes']['enable_question'] = $options['enable_question'];
         }
-		if (isset($options['enable_comment'])) {
+        if (isset($options['enable_comment'])) {
             $document['data']['attributes']['enable_comment'] = $options['enable_comment'];
         }
         if (!empty($options['manager_ids'])) {
