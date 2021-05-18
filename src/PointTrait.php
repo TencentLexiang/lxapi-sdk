@@ -14,7 +14,7 @@ Trait PointTrait
                     'is_exchange'=>$attributes['is_exchange'],
                     'point' => $attributes['point'],
                     'reason' => $attributes['reason'],
-                    'is_notify' => $attributes['is_notify']
+                    'is_notify' => $attributes['is_notify'],
 					
                 ],
                 'relationships' => [

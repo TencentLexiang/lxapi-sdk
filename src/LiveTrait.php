@@ -111,11 +111,10 @@ Trait LiveTrait
             $document['data']['attributes']['enable_question'] = $options['enable_question'];
         }
 		if (isset($options['enable_comment'])) {
-		if (isset($options['enable_comment'])) {
             $document['data']['attributes']['enable_comment'] = $options['enable_comment'];
         }
 		
-		if (!empty($options['manager_ids'])) {
+        if (!empty($options['manager_ids'])) {
             foreach ($options['manager_ids'] as $manager_id) {
                 $document['data']['relationships']['managers']['data'][] = [
                     'type' => 'staff',
