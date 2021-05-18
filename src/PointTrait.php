@@ -15,7 +15,6 @@ Trait PointTrait
                     'point' => $attributes['point'],
                     'reason' => $attributes['reason'],
                     'is_notify' => $attributes['is_notify'],
-					
                 ],
                 'relationships' => [
                     'recipient' => [
