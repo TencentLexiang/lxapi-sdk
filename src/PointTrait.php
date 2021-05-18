@@ -11,9 +11,11 @@ Trait PointTrait
                 'type' => 'point',
                 'attributes' => [
                     'op_type' => $attributes['op_type'],
+					'is_exchange'=>$attributes['is_exchange'],
                     'point' => $attributes['point'],
                     'reason' => $attributes['reason'],
-                    'is_notify' => $attributes['is_notify'],
+                    'is_notify' => $attributes['is_notify']
+					
                 ],
                 'relationships' => [
                     'recipient' => [
