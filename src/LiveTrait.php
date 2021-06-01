@@ -46,9 +46,9 @@ Trait LiveTrait
         if (isset($options['enable_comment'])) {
             $document['data']['attributes']['enable_comment'] = $options['enable_comment'];
         }
-		if (isset($options['vertical'])) {
+        if (isset($options['vertical'])) {
             $document['data']['attributes']['vertical'] = $options['vertical'];
-		}
+        }
         if (isset($options['auto_transfer_class'])) {
             $document['data']['attributes']['auto_transfer_class'] = $options['auto_transfer_class'];
 		}
@@ -142,7 +142,7 @@ Trait LiveTrait
         }
         if (!empty($options['manager_ids'])) {
             foreach ($options['manager_ids'] as $manager_id) {
-                $document['data']['relationships']['managers']['data'] = [
+                $document['data']['relationships']['managers']['data'][] = [
                     'type' => 'staff',
                     'id' => $manager_id
                 ];
@@ -150,7 +150,7 @@ Trait LiveTrait
         }
         if (!empty($options['privilege'])) {
             foreach ($options['privilege'] as $privilege) {
-                $document['data']['relationships']['privilege']['data']= $privilege;
+                $document['data']['relationships']['privilege']['data'][] = $privilege;
             }
         }
 
