@@ -87,7 +87,7 @@ Trait LiveTrait
                 $document['data']['relationships']['privilege']['data'][] = $privilege;
             }
         }
-        //return $document;
+		
         return $this->forStaff($staff_id)->post('lives', $document);
     }
 
