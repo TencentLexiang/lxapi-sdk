@@ -46,6 +46,30 @@ Trait LiveTrait
         if (isset($options['enable_comment'])) {
             $document['data']['attributes']['enable_comment'] = $options['enable_comment'];
         }
+        if (isset($options['vertical'])) {
+            $document['data']['attributes']['vertical'] = $options['vertical'];
+        }
+        if (isset($options['auto_transfer_class'])) {
+            $document['data']['attributes']['auto_transfer_class'] = $options['auto_transfer_class'];
+        }
+        if (isset($options['live_type'])) {
+            $document['data']['attributes']['live_type'] = $options['live_type'];
+        }
+        if (isset($options['password'])) {
+            $document['data']['attributes']['password'] = $options['password'];
+        }
+        if (!empty($options['course_category_id'])){
+            $document['data']['relationships']['course_category']['data']=[
+                'type' => 'category',
+                'id' => $options['course_category_id']
+            ];
+        }
+        if (!empty($options['class_category_id'])){
+            $document['data']['relationships']['class_category']['data']=[
+                'type' => 'category',
+                'id' => $options['class_category_id']
+            ];
+        }
         if (!empty($options['manager_ids'])) {
             foreach ($options['manager_ids'] as $manager_id) {
                 $document['data']['relationships']['managers']['data'][] = [
