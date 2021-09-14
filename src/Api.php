@@ -23,6 +23,7 @@ class Api
     use ClazzTrait;
     use CourseTrait;
     use CertificateRewardTrait;
+	use SharesTrait;
 
     protected $main_url = 'https://lxapi.lexiangla.com/cgi-bin';
 
