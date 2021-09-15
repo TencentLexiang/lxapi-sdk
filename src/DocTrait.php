@@ -117,7 +117,6 @@ Trait DocTrait
             $document['data']['relationships']['directory']['data']['type'] = 'directory';
             $document['data']['relationships']['directory']['data']['id'] = $options['directory_id'];
         }
-
         return $this->forStaff($staff_id)->post('docs/upload?state='.$state, $document);
     }
 
@@ -272,7 +271,6 @@ Trait DocTrait
     {
         return $this->get('docs/' . $id, $request);
     }
-
     public function postDirectory($staff_id, $attributes, $options = [])
     {
         $document = [
