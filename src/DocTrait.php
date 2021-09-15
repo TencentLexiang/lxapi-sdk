@@ -1,7 +1,8 @@
 <?php
+
 namespace Lexiangla\Openapi;
 
-Trait DocTrait
+trait DocTrait
 {
     public function postDoc($staff_id, $attributes, $options = [])
     {
@@ -30,10 +31,10 @@ Trait DocTrait
         if (isset($options['picture_url'])) {
             $document['data']['attributes']['picture_url'] = $options['picture_url'];
         }
-        if(isset($options['only_team'])) {
+        if (isset($options['only_team'])) {
             $document['data']['attributes']['only_team'] = $options['only_team'];
         }
-        if(isset($options['enable_image_watermark'])) {
+        if (isset($options['enable_image_watermark'])) {
             $document['data']['attributes']['enable_image_watermark'] = $options['enable_image_watermark'];
         }
         if (isset($options['signature'])) {
@@ -66,6 +67,7 @@ Trait DocTrait
         }
         return $this->forStaff($staff_id)->post('docs', $document);
     }
+
     public function uploadDoc($staff_id, $file_path, $options = [])
     {
         $this->staff_id = $staff_id;
@@ -94,7 +96,7 @@ Trait DocTrait
         if (isset($options['picture_url'])) {
             $document['data']['attributes']['picture_url'] = $options['picture_url'];
         }
-        if(isset($options['only_team'])){
+        if (isset($options['only_team'])) {
             $document['data']['attributes']['only_team'] = $options['only_team'];
         }
         if (isset($options['privilege_type'])) {
@@ -118,7 +120,7 @@ Trait DocTrait
             $document['data']['relationships']['directory']['data']['id'] = $options['directory_id'];
         }
         echo $state;
-        return $this->forStaff($staff_id)->post('docs/upload?state='.$state, $document);
+        return $this->forStaff($staff_id)->post('docs/upload?state=' . $state, $document);
     }
 
     public function reUploadDoc($staff_id, $doc_id, $file_path)
@@ -136,7 +138,7 @@ Trait DocTrait
             throw new \Exception("上传到腾讯云cos存储失败");
         }
 
-        return $this->forStaff($staff_id)->patch('docs/' . $doc_id . '/re-upload?state='.$state);
+        return $this->forStaff($staff_id)->patch('docs/' . $doc_id . '/re-upload?state=' . $state);
     }
 
     public function patchDoc($staff_id, $doc_id, $options)
@@ -177,10 +179,10 @@ Trait DocTrait
         if (isset($options['picture_url'])) {
             $document['data']['attributes']['picture_url'] = $options['picture_url'];
         }
-        if(isset($options['only_team'])){
+        if (isset($options['only_team'])) {
             $document['data']['attributes']['only_team'] = $options['only_team'];
         }
-        if(isset($options['enable_image_watermark'])){
+        if (isset($options['enable_image_watermark'])) {
             $document['data']['attributes']['enable_image_watermark'] = $options['enable_image_watermark'];
         }
         if (isset($options['signature'])) {
@@ -238,7 +240,7 @@ Trait DocTrait
         if (isset($options['picture_url'])) {
             $document['data']['attributes']['picture_url'] = $options['picture_url'];
         }
-        if(isset($options['only_team'])){
+        if (isset($options['only_team'])) {
             $document['data']['attributes']['only_team'] = $options['only_team'];
         }
         if (isset($options['signature'])) {
@@ -269,10 +271,12 @@ Trait DocTrait
     {
         return $this->forStaff($staff_id)->delete('docs/' . $doc_id);
     }
+
     public function getDoc($id, $request = [])
     {
         return $this->get('docs/' . $id, $request);
     }
+
     public function postDirectory($staff_id, $attributes, $options = [])
     {
         $document = [
@@ -335,7 +339,7 @@ Trait DocTrait
             $document['data']['relationships']['parent']['data']['id'] = $options['parent_id'];
         }
 
-        $path = 'directories/'. $directory_id . '/move';
+        $path = 'directories/' . $directory_id . '/move';
         return $this->forStaff($staff_id)->patch((string)$path, $document);
     }
 }
