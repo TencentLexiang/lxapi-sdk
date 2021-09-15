@@ -30,6 +30,12 @@ Trait DocTrait
         if (isset($options['picture_url'])) {
             $document['data']['attributes']['picture_url'] = $options['picture_url'];
         }
+        if(isset($options['only_team'])) {
+            $document['data']['attributes']['only_team'] = $options['only_team'];
+        }
+        if(isset($options['enable_image_watermark'])) {
+            $document['data']['attributes']['enable_image_watermark'] = $options['enable_image_watermark'];
+        }
         if (isset($options['signature'])) {
             $document['data']['attributes']['signature'] = $options['signature'];
         }
@@ -88,6 +94,9 @@ Trait DocTrait
         if (isset($options['picture_url'])) {
             $document['data']['attributes']['picture_url'] = $options['picture_url'];
         }
+        if(isset($options['only_team'])){
+            $document['data']['attributes']['only_team'] = $options['only_team'];
+        }
         if (isset($options['privilege_type'])) {
             $document['data']['attributes']['privilege_type'] = $options['privilege_type'];
         }
@@ -108,6 +117,7 @@ Trait DocTrait
             $document['data']['relationships']['directory']['data']['type'] = 'directory';
             $document['data']['relationships']['directory']['data']['id'] = $options['directory_id'];
         }
+        echo $state;
         return $this->forStaff($staff_id)->post('docs/upload?state='.$state, $document);
     }
 
@@ -167,6 +177,12 @@ Trait DocTrait
         if (isset($options['picture_url'])) {
             $document['data']['attributes']['picture_url'] = $options['picture_url'];
         }
+        if(isset($options['only_team'])){
+            $document['data']['attributes']['only_team'] = $options['only_team'];
+        }
+        if(isset($options['enable_image_watermark'])){
+            $document['data']['attributes']['enable_image_watermark'] = $options['enable_image_watermark'];
+        }
         if (isset($options['signature'])) {
             $document['data']['attributes']['signature'] = $options['signature'];
         }
@@ -221,6 +237,9 @@ Trait DocTrait
         }
         if (isset($options['picture_url'])) {
             $document['data']['attributes']['picture_url'] = $options['picture_url'];
+        }
+        if(isset($options['only_team'])){
+            $document['data']['attributes']['only_team'] = $options['only_team'];
         }
         if (isset($options['signature'])) {
             $document['data']['attributes']['signature'] = $options['signature'];
