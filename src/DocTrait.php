@@ -263,6 +263,7 @@ Trait DocTrait
         }
         return $this->forStaff($staff_id)->patch('docs/' . $doc_id . '?target_type=file', $document);
     }
+    
     public function deleteDoc($staff_id, $doc_id)
     {
         return $this->forStaff($staff_id)->delete('docs/' . $doc_id);
