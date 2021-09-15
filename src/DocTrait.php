@@ -1,8 +1,7 @@
 <?php
-
 namespace Lexiangla\Openapi;
 
-trait DocTrait
+Trait DocTrait
 {
     public function postDoc($staff_id, $attributes, $options = [])
     {
@@ -67,7 +66,6 @@ trait DocTrait
         }
         return $this->forStaff($staff_id)->post('docs', $document);
     }
-
     public function uploadDoc($staff_id, $file_path, $options = [])
     {
         $this->staff_id = $staff_id;
@@ -119,8 +117,8 @@ trait DocTrait
             $document['data']['relationships']['directory']['data']['type'] = 'directory';
             $document['data']['relationships']['directory']['data']['id'] = $options['directory_id'];
         }
-        echo $state;
-        return $this->forStaff($staff_id)->post('docs/upload?state=' . $state, $document);
+
+        return $this->forStaff($staff_id)->post('docs/upload?state='.$state, $document);
     }
 
     public function reUploadDoc($staff_id, $doc_id, $file_path)
@@ -138,7 +136,7 @@ trait DocTrait
             throw new \Exception("上传到腾讯云cos存储失败");
         }
 
-        return $this->forStaff($staff_id)->patch('docs/' . $doc_id . '/re-upload?state=' . $state);
+        return $this->forStaff($staff_id)->patch('docs/' . $doc_id . '/re-upload?state='.$state);
     }
 
     public function patchDoc($staff_id, $doc_id, $options)
@@ -266,12 +264,10 @@ trait DocTrait
         }
         return $this->forStaff($staff_id)->patch('docs/' . $doc_id . '?target_type=file', $document);
     }
-
     public function deleteDoc($staff_id, $doc_id)
     {
         return $this->forStaff($staff_id)->delete('docs/' . $doc_id);
     }
-
     public function getDoc($id, $request = [])
     {
         return $this->get('docs/' . $id, $request);
@@ -339,7 +335,7 @@ trait DocTrait
             $document['data']['relationships']['parent']['data']['id'] = $options['parent_id'];
         }
 
-        $path = 'directories/' . $directory_id . '/move';
+        $path = 'directories/'. $directory_id . '/move';
         return $this->forStaff($staff_id)->patch((string)$path, $document);
     }
 }
