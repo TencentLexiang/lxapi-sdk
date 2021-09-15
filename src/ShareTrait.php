@@ -38,10 +38,10 @@ trait ShareTrait
             $document["data"]["relationships"]["module"]["type"] = "team";
         }
         if (isset($options["topics_ids"])) { // 话题
-            foreach ($options['topics_ids'] as $topics_ids) {
+            foreach ($options['topics_ids'] as $topic_id) {
                 $document['data']["relationships"]["topics"][] = [
                     'type' => 'topic',
-                    'id' => $topics_ids
+                    'id' => $topic_id
                 ];
             }
         }
@@ -49,13 +49,13 @@ trait ShareTrait
     }
 
     // 删除轻享
-    public function deleteShare($staff_id, $shares_id)
+    public function deleteShare($staff_id, $share_id)
     {
-        return $this->forStaff($staff_id)->delete('/shares/' . $shares_id);
+        return $this->forStaff($staff_id)->delete('/shares/' . $share_id);
     }
 
     // 轻享回复
-    public function postShareReply($staff_id, $shares_id, $attributes, $options = [])
+    public function postShareReply($staff_id, $share_id, $attributes, $options = [])
     {
         $document["data"]["attributes"]["content"] = $attributes["content"];
         if (isset($options["parent_reply_id"])) {
@@ -65,13 +65,13 @@ trait ShareTrait
             ];
         }
 
-        return $this->forStaff($staff_id)->post("shares/" . $shares_id . "/replies", $document);
+        return $this->forStaff($staff_id)->post("shares/" . $share_id . "/replies", $document);
     }
 
     // 轻享评论删除
-    public function deleteShareReply($staff_id, $shares_id, $reply_id)
+    public function deleteShareReply($staff_id, $share_id, $reply_id)
     {
-        return $this->forStaff($staff_id)->delete("shares/" . $shares_id . "/replies/" . $reply_id);
+        return $this->forStaff($staff_id)->delete("shares/" . $share_id . "/replies/" . $reply_id);
     }
 
     // 轻享点赞
@@ -83,9 +83,9 @@ trait ShareTrait
     }
 
     // 取消点赞
-    public function deleteShareLike($staff_id, $shares_id, $like_id)
+    public function deleteShareLike($staff_id, $share_id, $like_id)
     {
-        return $this->forStaff($staff_id)->delete('shares/' . $shares_id . '/likes/' . $like_id);
+        return $this->forStaff($staff_id)->delete('shares/' . $share_id . '/likes/' . $like_id);
     }
 
     // 新增话题
