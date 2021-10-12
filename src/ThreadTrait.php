@@ -1,7 +1,8 @@
 <?php
+
 namespace Lexiangla\Openapi;
 
-Trait ThreadTrait
+trait ThreadTrait
 {
     public function postThread($staff_id, $attributes, $options = [])
     {
@@ -22,11 +23,38 @@ Trait ThreadTrait
                 ]
             ]
         ];
-
-        foreach ($options as $k => $v) {
-            $document['data']['attributes'][$k] = $v;
+        if (isset($options["is_anonymous"])) {
+            $document['data']['attributes']['is_anonymous'] = $options["is_anonymous"];
         }
+        if (isset($options["created_at"])) {
+            $document['data']['attributes']['created_at'] = $options["created_at"];
+        }
+        if (isset($options["updated_at"])) {
+            $document['data']['attributes']['updated_at'] = $options["updated_at"];
+        }
+        if (isset($options["read_count"])) {
+            $document['data']['attributes']['read_count'] = $options["read_count"];
+        }
+        /*foreach ($options as $k => $v) {
+            $document['data']['attributes'][$k] = $v;
+        }*/
         return $this->forStaff($staff_id)->post('threads', $document);
+    }
+
+    public function putThread($staff_id, $id, $options = [])
+    {
+        if (isset($options["content"])) {
+            $document["data"]["attributes"]["content"] = $options["content"];
+        }
+        if (isset($options["title"])) {
+            $document["data"]["attributes"]["title"] = $options["title"];
+        }
+        if (isset($options["category_id"])) {
+            $document["data"]["relationships"]["category"]["data"]["type"] = "category";
+            $document["data"]["relationships"]["category"]["data"]["id"] = $options["category_id"];
+        }
+
+        return $this->forStaff($staff_id)->put('threads/' . $id, $document);
     }
 
     public function getThread($id, $request = [])
@@ -36,7 +64,7 @@ Trait ThreadTrait
 
     public function getThreadPost($id, $request = [])
     {
-        return $this->get('threads/' . $id. '/posts', $request);
+        return $this->get('threads/' . $id . '/posts', $request);
     }
 
     public function deleteThread($staff_id, $thread_id)
@@ -67,6 +95,19 @@ Trait ThreadTrait
         }
 
         return $this->forStaff($staff_id)->post('threads/' . $thread_id . '/posts', $document);
+    }
+
+    public function putThreadPost($staff_id, $thread_id, $post_ID, $options)
+    {
+        if (isset($options["content"])) {
+            $document["data"]["attributes"]["content"] = $options["content"];
+        }
+        return $this->forStaff($staff_id)->put('/threads/' . $thread_id . '/posts/' . $post_ID, $document);
+    }
+
+    public function deleteThreadPost($staff_id, $thread_id, $post_ID)
+    {
+        return $this->forStaff($staff_id)->delete('/threads/' . $thread_id . '/posts/' . $post_ID);
     }
 
     public function postThreadConcerns($thread_id, $staffs)
