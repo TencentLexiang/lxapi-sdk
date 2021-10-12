@@ -2,7 +2,7 @@
 
 namespace Lexiangla\Openapi;
 
-trait ThreadTrait
+Trait ThreadTrait
 {
     public function postThread($staff_id, $attributes, $options = [])
     {
@@ -88,17 +88,17 @@ trait ThreadTrait
         return $this->forStaff($staff_id)->post('threads/' . $thread_id . '/posts', $document);
     }
 
-    public function putThreadPost($staff_id, $thread_id, $post_ID, $options=[])
+    public function putThreadPost($staff_id, $thread_id, $post_id, $options)
     {
         if (isset($options["content"])) {
             $document["data"]["attributes"]["content"] = $options["content"];
         }
-        return $this->forStaff($staff_id)->put('/threads/' . $thread_id . '/posts/' . $post_ID, $document);
+        return $this->forStaff($staff_id)->put('/threads/' . $thread_id . '/posts/' . $post_id, $document);
     }
 
-    public function deleteThreadPost($staff_id, $thread_id, $post_ID)
+    public function deleteThreadPost($staff_id, $thread_id, $post_id)
     {
-        return $this->forStaff($staff_id)->delete('/threads/' . $thread_id . '/posts/' . $post_ID);
+        return $this->forStaff($staff_id)->delete('/threads/' . $thread_id . '/posts/' . $post_id);
     }
 
     public function postThreadConcerns($thread_id, $staffs)
