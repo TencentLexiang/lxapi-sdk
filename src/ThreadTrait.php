@@ -32,7 +32,7 @@ Trait ThreadTrait
         return $this->forStaff($staff_id)->post('threads', $document);
     }
 
-    public function putThread($staff_id, $id, $options = [])
+    public function putThread($staff_id, $id, $options)
     {
         if (isset($options["content"])) {
             $document["data"]["attributes"]["content"] = $options["content"];
