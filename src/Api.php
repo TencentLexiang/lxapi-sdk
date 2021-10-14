@@ -24,7 +24,7 @@ class Api
     use CourseTrait;
     use CertificateRewardTrait;
     use ShareTrait;
-	use ExamTrait;
+    use ExamTrait;
 
     protected $main_url = 'https://lxapi.lexiangla.com/cgi-bin';
 
