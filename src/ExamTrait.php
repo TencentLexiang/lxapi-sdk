@@ -92,6 +92,17 @@ Trait ExamTrait
         return $this->forStaff($staff_id)->post('exams', $document);
     }
 
+    //发布考试
+    public function putExamPublish($staff_id, $exam_id)
+    {
+        return $this->forStaff($staff_id)->put('exams/' . $exam_id . "/publish",[]);
+    }
+    //取消发布
+    public function putExamCancelPublish($staff_id, $exam_id)
+    {
+        return $this->forStaff($staff_id)->put('exams/' . $exam_id . "/cancel-publish",[]);
+    }
+
     //编辑考试
     public function patchExam($staff_id, $exam_id, $attributes, $options = [])
     {

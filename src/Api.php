@@ -122,7 +122,7 @@ class Api
         if ($this->response->getStatusCode() == 204) {
             return [];
         }
-        if (in_array($this->response->getStatusCode(), [200, 201])) {
+        if (in_array($this->response->getStatusCode(), [200, 201, 202])) {
             return $this->response->document()->toArray();
         }
     }
