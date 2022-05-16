@@ -11,8 +11,7 @@ Trait LiveTrait
                 'type' => 'live',
                 'attributes' => [
                     'title' => $attributes['title'],
-                    'started_at' => $attributes['started_at'],
-                    'intro' => '',
+                    'started_at' => $attributes['started_at']
                 ],
             ]
         ];
@@ -40,6 +39,9 @@ Trait LiveTrait
         if (isset($options['privilege_type'])) {
             $document['data']['attributes']['privilege_type'] = $options['privilege_type'];
         }
+        if (isset($options['enable_gift'])) {
+            $document['data']['attributes']['enable_gift'] = $options['enable_gift'];
+        }
         if (isset($options['enable_question'])) {
             $document['data']['attributes']['enable_question'] = $options['enable_question'];
         }
@@ -58,14 +60,14 @@ Trait LiveTrait
         if (isset($options['password'])) {
             $document['data']['attributes']['password'] = $options['password'];
         }
-        if (!empty($options['course_category_id'])){
-            $document['data']['relationships']['course_category']['data']=[
+        if (!empty($options['course_category_id'])) {
+            $document['data']['relationships']['course_category']['data'] = [
                 'type' => 'category',
                 'id' => $options['course_category_id']
             ];
         }
-        if (!empty($options['class_category_id'])){
-            $document['data']['relationships']['class_category']['data']=[
+        if (!empty($options['class_category_id'])) {
+            $document['data']['relationships']['class_category']['data'] = [
                 'type' => 'category',
                 'id' => $options['class_category_id']
             ];
@@ -83,7 +85,6 @@ Trait LiveTrait
                 $document['data']['relationships']['privilege']['data'][] = $privilege;
             }
         }
-
         return $this->forStaff($staff_id)->post('lives', $document);
     }
 
@@ -113,11 +114,6 @@ Trait LiveTrait
                 ];
             }
         }
-
-        if (isset($options['intro'])) {
-            $document['data']['attributes']['intro'] = $options['intro'];
-        }
-
         if (isset($options['content'])) {
             $document['data']['attributes']['content'] = $options['content'];
         }
@@ -127,6 +123,12 @@ Trait LiveTrait
         if (isset($options['push_method'])) {
             $document['data']['attributes']['push_method'] = $options['push_method'];
         }
+        if (isset($options['live_type'])) {
+            $document['data']['attributes']['live_type'] = $options['live_type'];
+        }
+        if (isset($options['vertical'])) {
+            $document['data']['attributes']['vertical'] = $options['vertical'];
+        }
         if (isset($options['privilege_type'])) {
             $document['data']['attributes']['privilege_type'] = $options['privilege_type'];
         }
@@ -135,6 +137,12 @@ Trait LiveTrait
         }
         if (isset($options['enable_comment'])) {
             $document['data']['attributes']['enable_comment'] = $options['enable_comment'];
+        }
+        if (isset($options['enable_gift'])) {
+            $document['data']['attributes']['enable_gift'] = $options['enable_gift'];
+        }
+        if (isset($options['status'])) {
+            $document['data']['attributes']['status'] = $options['status'];
         }
         if (!empty($options['manager_ids'])) {
             foreach ($options['manager_ids'] as $manager_id) {
@@ -149,7 +157,6 @@ Trait LiveTrait
                 $document['data']['relationships']['privilege']['data'][] = $privilege;
             }
         }
-
         return $this->forStaff($staff_id)->patch('lives/' . $live_id, $document);
     }
 
