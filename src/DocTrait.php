@@ -294,6 +294,9 @@ Trait DocTrait
             $document['data']['relationships']['parent']['data']['type'] = 'directory';
             $document['data']['relationships']['parent']['data']['id'] = $options['parent_id'];
         }
+        if (isset($options['weight'])) {
+            $document['data']['attributes']['weight']=$options['weight'];
+        }
         return $this->forStaff($staff_id)->post('directories', $document);
     }
 
@@ -312,6 +315,9 @@ Trait DocTrait
 
         if (isset($options['name'])) {
             $document['data']['attributes']['name'] = $options['name'];
+        }
+        if (isset($options['weight'])) {
+            $document['data']['attributes']['weight']=$options['weight'];
         }
 
         return $this->forStaff($staff_id)->patch('directories/' . $directory_id, $document);
