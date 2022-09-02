@@ -42,6 +42,9 @@ Trait LiveTrait
         if (isset($options['enable_gift'])) {
             $document['data']['attributes']['enable_gift'] = $options['enable_gift'];
         }
+        if (isset($options['enable_record'])) {
+            $document['data']['attributes']['enable_record'] = $options['enable_record'];
+        }
         if (isset($options['enable_question'])) {
             $document['data']['attributes']['enable_question'] = $options['enable_question'];
         }
@@ -140,6 +143,9 @@ Trait LiveTrait
         }
         if (isset($options['enable_gift'])) {
             $document['data']['attributes']['enable_gift'] = $options['enable_gift'];
+        }
+        if (isset($options['enable_record'])) {
+            $document['data']['attributes']['enable_record'] = $options['enable_record'];
         }
         if (isset($options['status'])) {
             $document['data']['attributes']['status'] = $options['status'];
