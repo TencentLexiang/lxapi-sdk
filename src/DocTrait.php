@@ -36,6 +36,12 @@ Trait DocTrait
         if (isset($options['enable_image_watermark'])) {
             $document['data']['attributes']['enable_image_watermark'] = $options['enable_image_watermark'];
         }
+        if (isset($options['enable_watermark'])) {
+            $document['data']['attributes']['enable_watermark'] = $options['enable_watermark'];
+        }
+        if (isset($options['enable_copy_limit'])) {
+            $document['data']['attributes']['enable_copy_limit'] = $options['enable_copy_limit'];
+        }
         if (isset($options['signature'])) {
             $document['data']['attributes']['signature'] = $options['signature'];
         }
@@ -181,6 +187,12 @@ Trait DocTrait
         }
         if (isset($options['enable_image_watermark'])) {
             $document['data']['attributes']['enable_image_watermark'] = $options['enable_image_watermark'];
+        }
+        if (isset($options['enable_watermark'])) {
+            $document['data']['attributes']['enable_watermark'] = $options['enable_watermark'];
+        }
+        if (isset($options['enable_copy_limit'])) {
+            $document['data']['attributes']['enable_copy_limit'] = $options['enable_copy_limit'];
         }
         if (isset($options['signature'])) {
             $document['data']['attributes']['signature'] = $options['signature'];
