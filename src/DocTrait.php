@@ -280,6 +280,44 @@ Trait DocTrait
     {
         return $this->forStaff($staff_id)->delete('docs/' . $doc_id);
     }
+    public function postDocFavorite($staff_id, $doc_id, $attributes, $options = [])
+    {    
+        $document = ['data'];
+        if(isset($attributes['id']))//判断是否传了数组
+        {
+            $document['data'][] =[
+                'type' => 'staffs',
+                'id' => $attributes['id']
+            ];
+        }else{
+            foreach ($attributes as $attachment_id) {
+                $document['data'][] =[
+                    'type' => 'staffs',
+                    'id' => $attachment_id['id']
+                ];
+            }
+        }
+        return $this->forStaff($staff_id)->post('docs/' . $doc_id . '/relationships/favorites', $document);
+    }
+    public function deleteDocFavorite($staff_id, $doc_id, $attributes, $options = [])
+    {    
+        $document = ['data'];
+        if(isset($attributes['id']))//判断是否传了数组
+        {
+            $document['data'][] =[
+                'type' => 'staffs',
+                'id' => $attributes['id']
+            ];
+        }else{
+            foreach ($attributes as $attachment_id) {
+                $document['data'][] =[
+                    'type' => 'staffs',
+                    'id' => $attachment_id['id']
+                ];
+            }
+        }
+        return $this->forStaff($staff_id)->delete('docs/' . $doc_id . '/relationships/favorites', $document);
+    }
     public function getDoc($id, $request = [])
     {
         return $this->get('docs/' . $id, $request);
