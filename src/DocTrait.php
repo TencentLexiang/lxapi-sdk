@@ -280,42 +280,29 @@ Trait DocTrait
     {
         return $this->forStaff($staff_id)->delete('docs/' . $doc_id);
     }
-    public function postDocFavorite($staff_id, $doc_id, $attributes, $options = [])
+    public function postDocFavorite($staff_id, $doc_id, $operators)
     {    
         $document = ['data'];
-        if(isset($attributes['id']))//判断是否传了数组
-        {
-            $document['data'][] =[
-                'type' => 'staffs',
-                'id' => $attributes['id']
-            ];
-        }else{
-            foreach ($attributes as $attachment_id) {
-                $document['data'][] =[
-                    'type' => 'staffs',
-                    'id' => $attachment_id['id']
-                ];
-            }
-        }
+		foreach ($operators as $operator) {
+			$document['data'][] =[
+				'type' => 'staff',
+				'id' => $operator
+			];
+		}
+		//staff_id是调用接口的用户
+		//operator是收藏文档的用户
+		//一般情况下，staff_id可以跟operator是同一个用户ID
         return $this->forStaff($staff_id)->post('docs/' . $doc_id . '/relationships/favorites', $document);
     }
-    public function deleteDocFavorite($staff_id, $doc_id, $attributes, $options = [])
+    public function deleteDocFavorite($staff_id, $doc_id, $operators)
     {    
-        $document = ['data'];
-        if(isset($attributes['id']))//判断是否传了数组
-        {
-            $document['data'][] =[
-                'type' => 'staffs',
-                'id' => $attributes['id']
-            ];
-        }else{
-            foreach ($attributes as $attachment_id) {
-                $document['data'][] =[
-                    'type' => 'staffs',
-                    'id' => $attachment_id['id']
-                ];
-            }
-        }
+		$document = ['data'];
+		foreach ($operators as $operator) {
+			$document['data'][] =[
+				'type' => 'staff',
+				'id' => $operator
+			];
+		}
         return $this->forStaff($staff_id)->delete('docs/' . $doc_id . '/relationships/favorites', $document);
     }
     public function getDoc($id, $request = [])
