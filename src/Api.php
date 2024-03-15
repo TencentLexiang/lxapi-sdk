@@ -128,6 +128,27 @@ class Api
         }
     }
 
+    public function simpleGet($uri)
+    {
+        $headers["Authorization"] = 'Bearer ' . $this->getAccessToken();
+        $client = new \GuzzleHttp\Client();
+
+        $this->response = $client->request('GET', $this->main_url . '/' . $this->verson . '/' . $uri, [
+            'headers' => $headers
+        ]);
+
+        if ($this->response->getStatusCode() >= 400) {
+            return json_decode($this->response->getBody()->getContents(), true);
+        }
+        if ($this->response->getStatusCode() == 204) {
+            return [];
+        }
+        if (in_array($this->response->getStatusCode(), [200, 201, 202])) {
+            return json_decode($this->response->getBody()->getContents(), true);
+        }
+    }
+
+
     /**
      * 上传附件
      * @param $staff_id
