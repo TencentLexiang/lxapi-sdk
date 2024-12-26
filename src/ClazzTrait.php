@@ -39,6 +39,14 @@ Trait ClazzTrait
             $relationships['privilege']['data'] = $options['privilege'];
             unset($options['privilege']);
         }
+        if (!empty($options['optional_privilege'])) {
+            $relationships['privilege']['data'] = $options['privilege'];
+            unset($options['privilege']);
+        }
+        if (!empty($options['required_privilege'])) {
+            $relationships['privilege']['data'] = $options['privilege'];
+            unset($options['privilege']);
+        }
 
         $document['data']['attributes'] += $options;
 
