@@ -40,12 +40,12 @@ Trait ClazzTrait
             unset($options['privilege']);
         }
         if (!empty($options['optional_privilege'])) {
-            $relationships['privilege']['data'] = $options['privilege'];
-            unset($options['privilege']);
+            $relationships['optional_privilege']['data'] = $options['optional_privilege'];
+            unset($options['optional_privilege']);
         }
         if (!empty($options['required_privilege'])) {
-            $relationships['privilege']['data'] = $options['privilege'];
-            unset($options['privilege']);
+            $relationships['required_privilege']['data'] = $options['required_privilege'];
+            unset($options['required_privilege']);
         }
 
         $document['data']['attributes'] += $options;
